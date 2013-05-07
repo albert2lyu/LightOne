@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{7C0AB497-9E3E-4C1A-87F8-35D730B4A26E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bee", "Bee\Bee.csproj", "{DBF00AA0-8678-431D-8C55-540F5D1FC5EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Queen", "Queen\Queen.csproj", "{B66F09C4-D728-4F32-B6E3-48E3CD3E09CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{FF0E69FD-046B-4638-836B-483AB07B4AB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migration", "Migration\Migration.csproj", "{7F90CA44-63C5-485B-A6FD-40BAE5B77165}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FusionChartsDriver", "FusionChartsDriver\FusionChartsDriver.csproj", "{E57D9890-7B96-4737-BB46-53B06A5BEB7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{632E6F6B-5D4E-4981-B82D-E09774E664DD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7C0AB497-9E3E-4C1A-87F8-35D730B4A26E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C0AB497-9E3E-4C1A-87F8-35D730B4A26E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C0AB497-9E3E-4C1A-87F8-35D730B4A26E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C0AB497-9E3E-4C1A-87F8-35D730B4A26E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBF00AA0-8678-431D-8C55-540F5D1FC5EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBF00AA0-8678-431D-8C55-540F5D1FC5EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBF00AA0-8678-431D-8C55-540F5D1FC5EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBF00AA0-8678-431D-8C55-540F5D1FC5EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B66F09C4-D728-4F32-B6E3-48E3CD3E09CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B66F09C4-D728-4F32-B6E3-48E3CD3E09CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B66F09C4-D728-4F32-B6E3-48E3CD3E09CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B66F09C4-D728-4F32-B6E3-48E3CD3E09CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF0E69FD-046B-4638-836B-483AB07B4AB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF0E69FD-046B-4638-836B-483AB07B4AB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF0E69FD-046B-4638-836B-483AB07B4AB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF0E69FD-046B-4638-836B-483AB07B4AB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F90CA44-63C5-485B-A6FD-40BAE5B77165}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F90CA44-63C5-485B-A6FD-40BAE5B77165}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F90CA44-63C5-485B-A6FD-40BAE5B77165}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F90CA44-63C5-485B-A6FD-40BAE5B77165}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E57D9890-7B96-4737-BB46-53B06A5BEB7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E57D9890-7B96-4737-BB46-53B06A5BEB7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E57D9890-7B96-4737-BB46-53B06A5BEB7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E57D9890-7B96-4737-BB46-53B06A5BEB7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{632E6F6B-5D4E-4981-B82D-E09774E664DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{632E6F6B-5D4E-4981-B82D-E09774E664DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{632E6F6B-5D4E-4981-B82D-E09774E664DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{632E6F6B-5D4E-4981-B82D-E09774E664DD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
