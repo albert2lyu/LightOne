@@ -34,28 +34,28 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">
-      <HintPath>..\Lib\Common.Logging.dll</HintPath>
+      <HintPath>..\..\lib\Common.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Common.Logging.Log4Net">
-      <HintPath>..\Lib\Common.Logging.Log4Net.dll</HintPath>
+      <HintPath>..\..\lib\Common.Logging.Log4Net.dll</HintPath>
     </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.4.6.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\HtmlAgilityPack.dll</HintPath>
+      <HintPath>..\..\lib\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\log4net-1.2.10\net\2.0\release\log4net.dll</HintPath>
+      <HintPath>..\..\lib\log4net-1.2.10\net\2.0\release\log4net.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Bson, Version=1.6.0.4624, Culture=neutral, PublicKeyToken=f686731cfb9cc103, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\CSharpDriver-1.6.0.4624\MongoDB.Bson.dll</HintPath>
+      <HintPath>..\..\lib\CSharpDriver-1.6.0.4624\MongoDB.Bson.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Quartz">
-      <HintPath>..\Lib\Quartz.dll</HintPath>
+      <HintPath>..\..\lib\Quartz.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />

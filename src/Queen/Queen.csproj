@@ -40,21 +40,21 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Common.Logging">
-      <HintPath>..\Lib\Common.Logging.dll</HintPath>
+      <HintPath>..\..\lib\Common.Logging.dll</HintPath>
     </Reference>
     <Reference Include="Common.Logging.Log4Net">
-      <HintPath>..\Lib\Common.Logging.Log4Net.dll</HintPath>
+      <HintPath>..\..\lib\Common.Logging.Log4Net.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\log4net-1.2.10\net\2.0\release\log4net.dll</HintPath>
+      <HintPath>..\..\lib\log4net-1.2.10\net\2.0\release\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Lib\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Runtime.Serialization" />
