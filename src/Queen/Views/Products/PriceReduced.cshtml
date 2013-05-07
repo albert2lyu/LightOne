@@ -1,0 +1,94 @@
+﻿@model IEnumerable<Product>
+@{
+    ViewBag.Title = ViewBag.CategoryName + "超低折扣";
+}
+<style type="text/css">
+    .product {
+        width: 160px;
+        height: 250px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+        float: left;
+    }
+
+        .product img {
+            width: 160px;
+            height: 160px;
+            background-repeat: repeat;
+        }
+
+        .product a p {
+            height: 32px;
+            overflow: hidden;
+            line-height: 120%;
+        }
+
+        .product .off {
+            font-size: 26px;
+            font-weight: bold;
+            color: #b94A48;
+            padding: 0px 3px 0px 3px;
+            background-color: #F2DEDE;
+        }
+
+            .product .off small {
+                font-size: 13px;
+            }
+
+    .subcategories {
+        /*position:fixed;*/
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+        .subcategories .nav-pills a {
+            padding: 4px 6px 4px 6px;
+        }
+
+        .subcategories > ul > li a {
+            font-size: 15px;
+        }
+</style>
+<div class="row-fluid">
+    <div class="span2 well subcategories">
+        @{Html.RenderPartial("_SubCategories", (string)ViewBag.CategoryId);}
+    </div>
+    <div class="span10">
+        @{Html.RenderPartial("_NavCategories", (string)ViewBag.CategoryId);}
+        <div class="alert alert-info">亲爱的，这些都是降价幅度最大的商品，如果有钟意的要抓紧哦～</div>
+        @{
+            var placeholderImg = Url.Content("~/Content/blank.gif");
+            var hasOne = false;
+            foreach (var item in Model) {
+                hasOne = true;
+                var offRatio = (1 + item.ChangedRatio) * 10;
+                var offRatioMajor = decimal.Truncate(offRatio);
+                var offRatioMinor = offRatio - offRatioMajor;
+            <div class="product">
+                <a href="@Url.Action("Details", new {id = item.Id })" target="_blank" title="@item.Name">
+                    <img data-original="@item.ImgUrl" src="@placeholderImg"/>
+                    <p>@item.Name</p>
+                </a>
+                <p>
+                    <span class="off">@offRatioMajor.ToString("0")<small>@offRatioMinor.ToString(".#")折</small></span>
+                    @item.Price.ToString("C")
+                    <del>@item.OldPrice.ToString("C")</del>
+                </p>
+            </div>
+            }
+
+            if (!hasOne) {
+            <p><a target="_blank" href="@(!string.IsNullOrWhiteSpace(ViewBag.CategoryUrl) ? ViewBag.CategoryUrl : "http://www.yihaodian.com")?tracker_u=103827828">木有打折商品哦，去一号店网站看看～</a></p>
+            }
+        }
+        <div style="clear: both"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $(".product img").lazyload({
+            effect: "fadeIn"
+        });
+    });
+</script>

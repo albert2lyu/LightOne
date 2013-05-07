@@ -1,0 +1,15 @@
+﻿@model string
+@{
+    var categories = Category.GetAncestorCategories(Model).ToList();
+    categories.Insert(0, new Category { Name = "全部品类" });
+    <ul class="breadcrumb">
+        @foreach (var category in categories) {
+            if (category.Id == Model) {
+            <li class="active">@category.Name</li>
+            }
+            else {
+            <li><a href="@Url.Action(null, new {categoryId = category.Id })">@category.Name</a><span class="divider">/</span></li>
+            }
+        }
+    </ul>
+}

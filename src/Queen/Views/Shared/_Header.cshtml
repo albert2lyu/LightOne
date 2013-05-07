@@ -1,0 +1,40 @@
+﻿@{
+    var controller = ViewContext.RouteData.Values["controller"].ToString();
+    var action = ViewContext.RouteData.Values["action"].ToString();
+}
+<div class="navbar navbar-static-top">
+    <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="brand" href="#">LightOne</a>
+            <ul class="nav">
+                @RenderMenuItem("超低折扣", "PriceReduced", "Products", "icon-circle-arrow-down")
+            </ul>
+            <ul class="nav pull-right">
+                <li class="active">
+                    @using(Html.BeginForm("Search", "Products", FormMethod.Get, new { @class = "navbar-search form-search" })) {
+                        <div class="input-append">
+                            <input name="k" type="text" class="search-query" placeholder="输入您喜欢产品的网址">
+                            <button class="btn" type="submit"><i class="icon-search"></i></button>
+                        </div>
+                    }
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+@helper RenderMenuItem(string text, string action, string controller, string icon) {
+    var isActive = action.Equals(ViewContext.RouteData.Values["action"].ToString(), StringComparison.InvariantCultureIgnoreCase) &&
+                        controller.Equals(ViewContext.RouteData.Values["controller"].ToString(), StringComparison.InvariantCultureIgnoreCase);
+    <li class="@(isActive ? "active" : string.Empty)"><a href="@Url.Action(action, controller)">
+        <i class="@icon @(isActive ? "icon-white" : string.Empty)"></i>
+        @text
+    </a></li>
+    <li class="divider-vertical"></li>
+}
+@helper RenderSubMenuItem(string text, string action, string controller, string icon) {
+    var isActive = action.Equals(ViewContext.RouteData.Values["action"].ToString(), StringComparison.InvariantCultureIgnoreCase) &&
+                        controller.Equals(ViewContext.RouteData.Values["controller"].ToString(), StringComparison.InvariantCultureIgnoreCase);
+    <li class="@(isActive ? "active" : string.Empty)"><a href="@Url.Action(action, controller)">
+        <i class="@icon @(isActive ? "icon-white" : string.Empty)"></i>@text</a></li>
+    <li class="divider"></li>
+}

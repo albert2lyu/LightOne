@@ -1,0 +1,25 @@
+﻿@model string
+@{
+    var categoryTree = Category.GetCategoryTree(Model).ToList();
+    if (categoryTree.Count > 0) {
+    <ul class="nav nav-list">
+        @foreach (var branch in categoryTree) {
+            var css1 = branch.Item1.Id == Model ? "active" : string.Empty;
+            <li class="@css1">
+                <a href="@Url.Action(null, new { categoryId = branch.Item1.Id })">
+                    @branch.Item1.Name
+                </a>
+            </li>
+            <li class="divider"></li>
+            if (branch.Item2 != null) {
+            <ul class="nav nav-pills">
+                @foreach (var node in branch.Item2) {
+                    var css2 = node.Id == Model ? "active" : string.Empty;
+                    <li class="@css2"><a href="@Url.Action(null, new { categoryId = node.Id })">@node.Name</a></li>
+                }
+            </ul>
+            }
+        }
+    </ul>
+    }
+}

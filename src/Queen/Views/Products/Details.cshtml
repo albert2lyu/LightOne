@@ -1,0 +1,63 @@
+﻿@model ProductDetailsForm
+@{
+    ViewBag.Title = Model.Title;
+}
+<script src="@Url.Content("~/Content/FusionCharts/FusionCharts.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Content/FusionCharts/FusionCharts.jqueryplugin.js")" type="text/javascript"></script>
+
+<style type="text/css">
+    .label {
+        font-size: 14px;
+        margin-right: 10px;
+    }
+
+    .price {
+        display: inline;
+        color: #3A87AD;
+    }
+
+    .buy {
+        margin-top: 15px;
+    }
+
+    .chart {
+        margin-top: 25px;
+    }
+</style>
+<ul class="breadcrumb">
+    <li>@Html.ActionLink("首页", string.Empty)<span class="divider">/</span></li>
+    @foreach (var c in Model.Categories) {
+        <li>@Html.ActionLink(c.Name, "", new { categoryId = c.Id })<span class="divider">/</span></li>
+    }
+    <li class="active">@Model.Product.Name</li>
+</ul>
+<div class="row-fluid">
+    <div class="span4">
+        <img src="@Model.ImgUrl" />
+
+    </div>
+    <div class="span8">
+        <h4>@Model.Product.Name</h4>
+        <span class="label label-info">售价</span>
+        <h3 class="price">@Model.Product.Price.ToString("C")</h3>
+        <div class="buy">
+            <a class="btn btn-info btn-large" href="@Model.Product.Url?tracker_u=103827828">到一号店购买</a>
+        </div>
+        <div class="chart">
+            <h5>过去一个月价格走势</h5>
+            <div>正在读取历史价格</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $(".chart div").insertFusionCharts({
+            swfUrl: "@Url.Content("~/Content/FusionCharts/MSStepLine.swf")",
+            dataSource: "../PriceHistoryChart/@Model.Product.Id",
+            dataFormat: "jsonurl",
+            width: "100%",
+            height: "300",
+            id: "chartId"
+        });
+    });
+</script>
