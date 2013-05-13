@@ -20,7 +20,7 @@ namespace Bee.Yhd {
             var pages = GetTotalPage(categoryNumber);
 
             var results = new ConcurrentBag<ProductProxy>(); // 因为使用多线程填充，所以使用线程安全的集合类
-            var useParallel = false;
+            var useParallel = true;
             if (useParallel) {
                 Parallel.For(0, pages,
                     i => {
@@ -88,8 +88,8 @@ namespace Bee.Yhd {
         private IEnumerable<ProductProxy> ParseProductsFromHtmlDocument(HtmlDocument doc) {
             var products = new List<ProductProxy>();
             foreach (var node in doc.DocumentNode.SelectNodes(@"//li[@class='producteg']")) {
-                var product = ParseProductFromLiNode(node);
-                products.Add(product);
+                foreach(var product in ParseProductsFromLiNode(node))
+                    products.Add(product);
             }
             
             // 调用truestock页面，获取真实价格
@@ -142,10 +142,16 @@ namespace Bee.Yhd {
             return int.Parse(m.Groups[1].Value);
         }
 
-        private ProductProxy ParseProductFromLiNode(HtmlNode liTag) {
-            var productATag = liTag.SelectSingleNode(@"./div/a[@class='title']");
+        private IEnumerable<ProductProxy> ParseProductsFromLiNode(HtmlNode liTag) {
+            foreach (var node in liTag.SelectNodes(@"./div[contains(@class, 'itemSearchResultCon')]")) {
+                yield return ParseProductFromDivNode(node);
+            }
+        }
+
+        private ProductProxy ParseProductFromDivNode(HtmlNode divTag) {
+            var productATag = divTag.SelectSingleNode(@"./a[@class='title']");
             if (productATag == null)
-                throw new ParseException("无法找到产品标签：li > div > a[class=\"title\"]");
+                throw new ParseException("无法找到产品标签：div > a[class=\"title\"]");
 
             var number = productATag.GetAttributeValue("pmid", string.Empty);
             if (string.IsNullOrWhiteSpace(number))
@@ -160,9 +166,9 @@ namespace Bee.Yhd {
             if (string.IsNullOrWhiteSpace(url))
                 throw new ParseException("无法解析产品url：{0}", productATag.OuterHtml);
 
-            var productImgTag = liTag.SelectSingleNode(@"./div/a/img");
+            var productImgTag = divTag.SelectSingleNode(@"./a/img");
             if (productImgTag == null)
-                throw new ParseException("无法找到产品图片标签：li > div > a > img");
+                throw new ParseException("无法找到产品图片标签：div > a > img");
             var imgUrl = productImgTag.GetAttributeValue("src", string.Empty);
             if (string.IsNullOrWhiteSpace(imgUrl) || string.Compare(imgUrl, "http://image.yihaodianimg.com/search/global/images/blank.gif", true) == 0)
                 imgUrl = productImgTag.GetAttributeValue("original", string.Empty);
@@ -170,9 +176,9 @@ namespace Bee.Yhd {
                 throw new ParseException("无法找到产品图片链接：{0}", productImgTag.OuterHtml);
 
             // 因为有缓存，此处的价格未必准确
-            var priceTag = liTag.SelectSingleNode(@"./div/p[@class='price']//strong");
+            var priceTag = divTag.SelectSingleNode(@"./p[@class='price']//strong");
             if (priceTag == null)
-                throw new ParseException("无法找到产品价格标签：li > div > p[class=\"price\"] > strong");
+                throw new ParseException("无法找到产品价格标签：div > p[class=\"price\"] > strong");
             var price = ParsePriceFromString(priceTag.InnerText);
 
             return new ProductProxy {
