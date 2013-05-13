@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Common.Logging;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
+using System.Web;
 
 namespace Bee.Yhd {
     class YhdProductExtractor {
@@ -19,7 +20,7 @@ namespace Bee.Yhd {
             var pages = GetTotalPage(categoryNumber);
 
             var results = new ConcurrentBag<ProductProxy>(); // 因为使用多线程填充，所以使用线程安全的集合类
-            var useParallel = true;
+            var useParallel = false;
             if (useParallel) {
                 Parallel.For(0, pages,
                     i => {
@@ -142,11 +143,14 @@ namespace Bee.Yhd {
         }
 
         private ProductProxy ParseProductFromLiNode(HtmlNode liTag) {
-            var number = ParseNumberFromLiIdAttributeValue(liTag);
-
             var productATag = liTag.SelectSingleNode(@"./div/a[@class='title']");
             if (productATag == null)
                 throw new ParseException("无法找到产品标签：li > div > a[class=\"title\"]");
+
+            var number = productATag.GetAttributeValue("pmid", string.Empty);
+            if (string.IsNullOrWhiteSpace(number))
+                throw new ParseException("无法解析产品编码：{0}", productATag.OuterHtml);
+
             // 有些产品名称中带有"，导致title属性解析错误，所以采用InnerText解析产品名称
             //var name = productATag.GetAttributeValue("title", string.Empty);
             var name = ParseNameFromString(productATag.InnerText);
@@ -200,6 +204,7 @@ namespace Bee.Yhd {
                     .Trim();
             }
 
+            name = HttpUtility.HtmlDecode(name);
             return string.IsNullOrWhiteSpace(name) ? str : name;
         }
 
@@ -224,30 +229,6 @@ namespace Bee.Yhd {
                 throw new ParseException("从字符串'{0}'中解析价格失败，exp pattern:'{1}'", str, pattern);
 
             return decimal.Parse(val);
-        }
-
-        private string ParseNumberFromLiIdAttributeValue(HtmlNode li) {
-            var str = li.GetAttributeValue("id", string.Empty);
-            if (string.IsNullOrWhiteSpace(str))
-                throw new ParseException("无法解析产品Id（li[id]属性为空）：", li.OuterHtml);
-
-            int val;
-            if (str.StartsWith("producteg_") && int.TryParse(str.Substring("producteg_".Length), out val)) {
-                return val.ToString();
-            }
-            else {
-                var pattern = @"_(\d+)";
-                var regex = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                var m = regex.Match(str);
-                if (!m.Success)
-                    throw new ParseException("从li标签id属性值:'{0}'中解析产品Id失败，exp pattern:'{1}'", str, pattern);
-
-                var id = m.Groups[1].Value;
-                if (string.IsNullOrWhiteSpace(id))
-                    throw new ParseException("从li标签id属性值:'{0}'中解析产品Id失败，exp pattern:'{1}'", str, pattern);
-
-                return id;
-            }
         }
     }
 }
