@@ -131,7 +131,7 @@ namespace Bee.Yhd {
         private int ParseTotalPage(HtmlNode doc) {
             var node = doc.SelectSingleNode(@"//span[@class='pageOp']");
             if (node == null)
-                throw new ParseException("无法找到总页数标签：span[class=\"pageOp\"]");
+                throw new ParseException("无法找到总页数标签：span[class=\"pageOp\"]{0}{1}", Environment.NewLine, doc.OuterHtml);
 
             var pattern = @"共(\d+)页";
             var regex = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
