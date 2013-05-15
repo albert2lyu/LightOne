@@ -143,7 +143,11 @@ namespace Bee.Yhd {
         }
 
         private IEnumerable<ProductProxy> ParseProductsFromLiNode(HtmlNode liTag) {
-            foreach (var node in liTag.SelectNodes(@"./div[contains(@class, 'itemSearchResultCon')]")) {
+            var divNodes = liTag.SelectNodes(@"./div[contains(@class, 'itemSearchResultCon')]");
+            if (divNodes == null) 
+                throw new ParseException("无法从产品li标签中解析产品div标签{0}{1}", Environment.NewLine, liTag.OuterHtml);
+
+            foreach (var node in divNodes) {
                 yield return ParseProductFromDivNode(node);
             }
         }
