@@ -26,7 +26,7 @@ namespace Bee.Yhd {
                     i => {
                         var page = i + 1;
                         var doc = GetResponseFromServer(categoryNumber, page);
-                        if (doc != null && !IsEmptyResult(doc.DocumentNode)) {
+                        if (doc != null) {
                             var products = ParseProductsFromHtmlDocument(doc);
                             foreach(var product in products)
                                 results.Add(product);
@@ -36,7 +36,7 @@ namespace Bee.Yhd {
             else {
                 foreach (var page in Enumerable.Range(1, pages)) {
                     var doc = GetResponseFromServer(categoryNumber, page);
-                    if (doc != null && !IsEmptyResult(doc.DocumentNode)) {
+                    if (doc != null) {
                         var products = ParseProductsFromHtmlDocument(doc);
                         foreach (var product in products)
                             results.Add(product);
@@ -125,7 +125,7 @@ namespace Bee.Yhd {
         }
 
         private bool IsEmptyResult(HtmlNode node) {
-            return node.SelectSingleNode(@"//div[@class='emptyResultTips mb']") != null;
+            return node.SelectSingleNode(@"//div[@class='emptyResultTipsCondt mt']") != null;
         }
 
         private int ParseTotalPage(HtmlNode doc) {
