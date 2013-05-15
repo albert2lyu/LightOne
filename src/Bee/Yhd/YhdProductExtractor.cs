@@ -105,19 +105,19 @@ namespace Bee.Yhd {
                 index += BATCH_SIZE;
 
                 var url = "http://busystock.i.yihaodian.com/busystock/restful/truestock?mcsite=1&provinceId=2&" +
-                    string.Join("&", productsInBatch.Select(p => string.Format("productIds={0}", p.Number)));
+                    string.Join("&", productsInBatch.Select(p => string.Format("pmIds={0}", p.Number)));
 
                 var json = HttpClient.DownloadString(url);
 
                 var productsPrices = JsonConvert.DeserializeAnonymousType(json, new[] { 
                         new {
-                            productId = string.Empty,
+                            pmId = string.Empty,
                             productPrice = (decimal)0
                         }
                     });
 
                 foreach (var productPrice in productsPrices) {
-                    var product = products.FirstOrDefault(p => p.Number == productPrice.productId);
+                    var product = products.FirstOrDefault(p => p.Number == productPrice.pmId);
                     if (product != null)
                         product.Price = productPrice.productPrice;
                 }
