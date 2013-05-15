@@ -56,24 +56,33 @@ namespace Bee.Yhd {
             return ParseTotalPage(doc.DocumentNode);
         }
 
+        private string DownloadProductListHtml(string url) {
+            using (var webClient = new WebClient()) {
+                webClient.Headers.Add(HttpRequestHeader.Cookie, "provinceId=2");    // 北京站
+                //webClient.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
+                webClient.Encoding = Encoding.UTF8;
+                var productSearchUrl = url;
+                var responseContent = webClient.DownloadString(productSearchUrl);
+
+                var html = JsonConvert.DeserializeAnonymousType(responseContent, new { value = string.Empty }).value;
+                if (string.IsNullOrWhiteSpace(html))
+                    throw new ParseException("无法反序列化Json响应内容，缺少value属性？");
+
+                return html;
+            }
+
+        }
+
         private HtmlDocument GetResponseFromServer(string categoryNumber, int page, int retryTimes = 0) {
             try {
-                using (var webClient = new WebClient()) {
-                    webClient.Headers.Add(HttpRequestHeader.Cookie, "provinceId=2");    // 北京站
-                    //webClient.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
-                    webClient.Encoding = Encoding.UTF8;
-                    var productSearchUrl = string.Format(@"http://www.yihaodian.com/ctg/searchPage/c{0}-/b0/a-s1-v0-p{1}-price-d0-f04-m1-rt0-pid-k/", categoryNumber, page);
-                    var responseContent = webClient.DownloadString(productSearchUrl);
+                var defaultHtml = DownloadProductListHtml(string.Format(@"http://www.yihaodian.com/ctg/searchPage/c{0}-/b0/a-s1-v0-p{1}-price-d0-f04-m1-rt0-pid-k/", categoryNumber, page));
+                // 产品列表具有延迟加载功能，所以需要抓取两次才能获取到完整一页的内容
+                var moreHtml = DownloadProductListHtml(string.Format(@"http://www.yihaodian.com/ctg/searchPage/c{0}-/b0/a-s1-v0-p{1}-price-d0-f04-m1-rt0-pid-k/?isGetMoreProducts=1", categoryNumber, page));
 
-                    var html = JsonConvert.DeserializeAnonymousType(responseContent, new { value = string.Empty }).value;
-                    if (string.IsNullOrWhiteSpace(html))
-                        throw new ParseException("无法反序列化Json响应内容，缺少value属性？");
+                var doc = new HtmlDocument();
+                doc.LoadHtml(new StringBuilder().Append(defaultHtml).Append(moreHtml).ToString());
 
-                    var doc = new HtmlDocument();
-                    doc.LoadHtml(html);
-
-                    return doc;
-                }
+                return doc;
             }
             catch (Exception e) {
                 if (retryTimes < 3)
