@@ -143,16 +143,24 @@ namespace Bee.Yhd {
         }
 
         private IEnumerable<ProductProxy> ParseProductsFromLiNode(HtmlNode liTag) {
-            var divNodes = liTag.SelectNodes(@"./div[contains(@class, 'itemSearchResultCon')]");
-            if (divNodes == null) 
-                throw new ParseException("无法从产品li标签中解析产品div标签{0}{1}", Environment.NewLine, liTag.OuterHtml);
+            var bookNode = liTag.SelectSingleNode(@"./div[contains(@class, 'bookDetail')]");
+            if (bookNode == null) {
+                // 普通商品
+                var divNodes = liTag.SelectNodes(@"./div[contains(@class, 'itemSearchResultCon')]");
+                if (divNodes == null)
+                    throw new ParseException("无法从产品li标签中解析产品div标签{0}{1}", Environment.NewLine, liTag.OuterHtml);
 
-            foreach (var node in divNodes) {
-                yield return ParseProductFromDivNode(node);
+                foreach (var node in divNodes) {
+                    yield return ParseNormalProductFromDivNode(node);
+                }
+            }
+            else {
+                // 图书、票务产品
+                yield return ParseBookProductFromLiNode(liTag);
             }
         }
 
-        private ProductProxy ParseProductFromDivNode(HtmlNode divTag) {
+        private ProductProxy ParseNormalProductFromDivNode(HtmlNode divTag) {
             var productATag = divTag.SelectSingleNode(@"./a[@class='title']");
             if (productATag == null)
                 throw new ParseException("无法找到产品标签：div > a[class=\"title\"]");
@@ -183,6 +191,49 @@ namespace Bee.Yhd {
             var priceTag = divTag.SelectSingleNode(@"./p[@class='price']//strong");
             if (priceTag == null)
                 throw new ParseException("无法找到产品价格标签：div > p[class=\"price\"] > strong");
+            var price = ParsePriceFromString(priceTag.InnerText);
+
+            return new ProductProxy {
+                Number = number,
+                Name = name,
+                Url = url,
+                ImgUrl = imgUrl,
+                Price = price,
+                Source = "yhd"
+            };
+        }
+
+        private ProductProxy ParseBookProductFromLiNode(HtmlNode liTag) {
+            var productATag = liTag.SelectSingleNode(@".//a[@class='title']");
+            if (productATag == null)
+                throw new ParseException("无法找到产品标签：li >> a[class=\"title\"]");
+
+            var number = productATag.GetAttributeValue("pmid", string.Empty);
+            if (string.IsNullOrWhiteSpace(number))
+                throw new ParseException("无法解析产品编码：{0}", productATag.OuterHtml);
+
+            // 有些产品名称中带有"，导致title属性解析错误，所以采用InnerText解析产品名称
+            //var name = productATag.GetAttributeValue("title", string.Empty);
+            var name = ParseNameFromString(productATag.InnerText);
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ParseException("无法解析产品名称：{0}", productATag.InnerText);
+            var url = productATag.GetAttributeValue("href", string.Empty);
+            if (string.IsNullOrWhiteSpace(url))
+                throw new ParseException("无法解析产品url：{0}", productATag.OuterHtml);
+
+            var productImgTag = liTag.SelectSingleNode(@".//a/img");
+            if (productImgTag == null)
+                throw new ParseException("无法找到产品图片标签：li >> a > img");
+            var imgUrl = productImgTag.GetAttributeValue("src", string.Empty);
+            if (string.IsNullOrWhiteSpace(imgUrl) || string.Compare(imgUrl, "http://image.yihaodianimg.com/search/global/images/blank.gif", true) == 0)
+                imgUrl = productImgTag.GetAttributeValue("original", string.Empty);
+            if (string.IsNullOrWhiteSpace(imgUrl))
+                throw new ParseException("无法找到产品图片链接：{0}", productImgTag.OuterHtml);
+
+            // 因为有缓存，此处的价格未必准确
+            var priceTag = liTag.SelectSingleNode(@"./div/p/span/strong");
+            if (priceTag == null)
+                throw new ParseException("无法找到产品价格标签：li > div > p > span > strong");
             var price = ParsePriceFromString(priceTag.InnerText);
 
             return new ProductProxy {
