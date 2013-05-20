@@ -6,72 +6,53 @@ using Common.Data;
 using MongoDB.Driver.Builders;
 using Newtonsoft.Json;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Migration {
-    
+
     class Program {
 
-        private static IEnumerable<string> Read() {
-            var productsCollection = DatabaseFactory.CreateMongoDatabase().GetCollection<Product>("products");
-            var products = productsCollection.Find(Query<Product>.Size(p => p.PriceHistory, 1));
-            foreach (var p in products) {
-                var json = JsonConvert.SerializeObject(new {
-                    Id = p.Id,
-                    PriceHistory = p.PriceHistory
-                });
-                yield return json;
-            }
-        }
-
         static void Main(string[] args) {
-            //var index = 0;
-            //foreach (var line in Read()) {
-
-            //    File.AppendAllLines(
-            //        string.Format("data-{0}.txt", (index++ / 10000).ToString("0")),
-            //        new[] { line });
-            //}
-            //return;
-            var count = 0;
+            var count = 1;
             var productsCollection = DatabaseFactory.CreateMongoDatabase().GetCollection<Product>("products");
 
-            foreach (var i in Enumerable.Range(0, 51)) {
-                foreach (var line in File.ReadAllLines("data-" + i + ".txt")) {
-                    var item = JsonConvert.DeserializeAnonymousType(line,
-                        new {
-                            Id = string.Empty,
-                            PriceHistory = new ProductPriceHistory[0]
-                        });
+            while (true) {
+                var products = productsCollection.Find(
+                        Query<Product>.LT(p => p.ChangedRatio, 0))
+                    .SetSortOrder(SortBy<Product>.Descending(p => p.ChangedRatio))
+                    .SetLimit(100);
 
-                    //foreach (var item in data) {
-                    if (count++ % 100 == 0)
-                        Console.Write(".");
+                var ratio = decimal.Parse(args[0]);
 
-                    var product = productsCollection.FindOne(Query<Product>.EQ(p => p.Id, item.Id));
-                    if (product != null) {
-                        if (product.PriceHistory == null)
-                            product.PriceHistory = new List<ProductPriceHistory>();
-                        product.PriceHistory.AddRange(item.PriceHistory);
-                        product.PriceHistory = RemoveDupItems(product.PriceHistory);
-                        productsCollection.Save(product);
+                foreach (var p in products) {
+                    Console.WriteLine("[{2}]{0} -> {1}", p.OldPrice, p.Price, count++);
+                    if (p.PriceHistory == null) {
+                        productsCollection.Remove(Query<Product>.EQ(x => x.Id, p.Id));
+                        return;
+                    }
+
+                    var trimmedPriceHistory = p.PriceHistory.Where(h => h.Price < p.Price * ratio && h.Price > p.Price / ratio).ToList();
+                    if (trimmedPriceHistory.Count == 0) {
+                        productsCollection.Remove(Query<Product>.EQ(x => x.Id, p.Id));
+                        return;
+                    }
+
+                    p.PriceHistory = trimmedPriceHistory;
+                    p.Price = trimmedPriceHistory.Last().Price;
+                    p.OldPrice = trimmedPriceHistory[trimmedPriceHistory.Count - 2 >= 0 ? trimmedPriceHistory.Count - 2 : 0].Price;
+                    var newRatio = CaclChangedRatio(p.OldPrice, p.Price);
+                    if (newRatio != p.ChangedRatio) {
+                        p.ChangedRatio = newRatio;
+                        productsCollection.Save(p);
                     }
                 }
             }
         }
 
-        private static List<ProductPriceHistory> RemoveDupItems(List<ProductPriceHistory> items) {
-            var result = new List<ProductPriceHistory>();
-
-            var lastPrice = decimal.MinusOne;
-            foreach (var item in items.OrderBy(p => p.Time)) {
-                if (lastPrice == item.Price)
-                    continue;
-
-                lastPrice = item.Price;
-                result.Add(item);
-            }
-
-            return result;
+        private static decimal CaclChangedRatio(decimal oldPrice, decimal newPrice) {
+            if (oldPrice == 0)
+                return 0;
+            return (newPrice - oldPrice) / oldPrice;
         }
     }
 }
