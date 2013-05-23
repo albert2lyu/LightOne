@@ -122,7 +122,7 @@ namespace Business {
         /// <returns></returns>
         public static IEnumerable<Product> GetByPriceReduced(string categoryId, int count) {
             var query = Query.And(Query<Product>.LT(p => p.ChangedRatio, 0),
-                Query<Product>.GT(p => p.UpdateTime, DateTime.Now.AddHours(-72)));
+                Query<Product>.GT(p => p.UpdateTime, DateTime.Now.AddHours(-24)));
             if (!string.IsNullOrWhiteSpace(categoryId))
                 query = Query.And(query, Query<Product>.EQ(p => p.CategoryIds, categoryId));
 

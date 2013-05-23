@@ -99,6 +99,8 @@ namespace Business
                 // 返回需要抓取数据的分类
                 yield return category;
             }
+
+            
         }
 
         public static Category Get(string id) {

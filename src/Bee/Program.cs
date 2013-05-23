@@ -14,13 +14,16 @@ namespace Bee {
             var sw = new Stopwatch();
             sw.Start();
             var ds = new YhdDataSource();
-            var products = ds.ExtractProductsInCategory("5231")
-                                .Distinct(new ProductProxyComparer());   // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
-            var x = products.Where(p => p.Number == "8987215").Count();
-            Console.WriteLine("download:" + sw.Elapsed);
+            var products = ds.ExtractProductsInCategory("28988")
+                                .Distinct(new ProductProxyComparer())   // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
+                                .ToList();
+            foreach (var p in products.OrderBy(p=>p.Price)) {
+                Console.WriteLine(p.Price + "\t" + p.Name);
+            }
+            //var x = products.Where(p => p.Number == "8987215").Count();
             //new CategoryProductsProxy { CategoryId = ObjectId.Parse("10290784-6a45-408d-ab85-579fa914efc8"), Products = products }
             //    .SaveOrUpdate();
-            //Console.WriteLine("save to db:" + sw.Elapsed);
+            Console.WriteLine(products.Count);
             Console.ReadLine();
         }
 
