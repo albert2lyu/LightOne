@@ -56,6 +56,7 @@
     <Compile Include="ArrayUtil.cs" />
     <Compile Include="CategoryProducts.cs" />
     <Compile Include="ParseException.cs" />
+    <Compile Include="ProductSignature.cs" />
     <Compile Include="Signature.cs" />
     <Compile Include="ProductSignatureAlgorithm.cs" />
     <Compile Include="ProductSignatureContainer.cs" />

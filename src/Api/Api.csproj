@@ -45,9 +45,8 @@
     <Reference Include="Common.Logging.Log4Net">
       <HintPath>..\..\lib\Common.Logging.Log4Net.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\log4net-1.2.10\net\2.0\release\log4net.dll</HintPath>
+    <Reference Include="log4net">
+      <HintPath>..\..\lib\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>False</Private>
@@ -104,6 +103,7 @@
   <ItemGroup>
     <Compile Include="Controllers\CategoryProductsController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
+    <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Models\JsonWrapModelBinder.cs" />
     <Compile Include="Models\JsonResult.cs" />
     <Compile Include="Global.asax.cs">
