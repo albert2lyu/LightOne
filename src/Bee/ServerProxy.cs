@@ -15,5 +15,9 @@ namespace Bee {
                 Products = products
             });
         }
+
+        public static IEnumerable<ProductSignature> GetProductSignaturesByCategoryId(string categoryId) {
+            return ProxyHelper.Get<IEnumerable<ProductSignature>>("Products/GetSignaturesByCategoryId?categoryId={0}", categoryId);
+        }
     }
 }

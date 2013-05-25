@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
 using Quartz;
+using System.Collections.Generic;
+using Business;
 
 namespace Bee.Yhd {
     class YhdArchiveJob : IStatefulJob {
@@ -28,19 +30,28 @@ namespace Bee.Yhd {
             
             var index = 0;
             Parallel.ForEach(needProcessCategories,
-                new ParallelOptions { MaxDegreeOfParallelism = 1 },// 并发处理每个分类，这样可以大大加快处理速度
+                new ParallelOptions { MaxDegreeOfParallelism = 3 },// 并发处理每个分类，这样可以大大加快处理速度
                 (category) => {
                     try {
-                        Logger.Info(string.Format("{3}/{4} {0}[{1}]{2}",
+                        // 获取服务器上的产品信息签名
+                        var productSignatures = ServerProxy.GetProductSignaturesByCategoryId(category.Id);
+                        
+                        // 从网站上抓取产品信息
+                        var downloadProducts = ds.ExtractProductsInCategory(category.Number)
+                            .Distinct(new ProductComparer());   // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
+
+                        // 找到发生变化的产品
+                        var changedProducts = FindChangedProducts(downloadProducts, productSignatures).ToList();
+
+                        ServerProxy.UpsertProducts(category.Id, changedProducts);
+
+                        Logger.Info(string.Format("{3}/{4} {0}[{1}]{2} TOTAL[{5}] CHANGED[{6}]",
                             string.Join("", Enumerable.Repeat(".", category.Level - 1)),
                             category.Number,
                             category.Name,
-                            Interlocked.Increment(ref index), needProcessCategories.Count()));
-
-                        var products = ds.ExtractProductsInCategory(category.Number)
-                            .Distinct(new ProductComparer());   // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
-
-                        ServerProxy.UpsertProducts(category.Id, products);
+                            Interlocked.Increment(ref index), needProcessCategories.Count(),
+                            downloadProducts.Count(),
+                            changedProducts.Count()));
                     }
                     catch (Exception e) {
                         Logger.Error(string.Format("处理分类{0}{1}失败", category.Name, category.Number), e);
@@ -48,6 +59,20 @@ namespace Bee.Yhd {
                 });
 
             Logger.Info(string.Format("抓取一号店数据完成，用时{0:0.#}分", stopwatch.Elapsed.TotalMinutes));
+        }
+
+        private IEnumerable<Product> FindChangedProducts(IEnumerable<Product> products, IEnumerable<ProductSignature> existsProducts) {
+            Func<string, string, string> createKey = (source, number) => {
+                return source + "-" + number;
+            };
+            var existsProductsMap = existsProducts.GroupBy(p => createKey(p.Source, p.Number), p => p.Signature).ToDictionary(p => p.Key, p => p.First());
+            
+            return products.Where(p=> {
+                var key = createKey(p.Source, p.Number);
+                var signature = ProductSignature.Create(p).Signature;
+
+                return !existsProductsMap.ContainsKey(key) || !Signature.IsMatch(existsProductsMap[key], signature);
+            });
         }
     }
 }

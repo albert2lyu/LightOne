@@ -11,7 +11,7 @@ namespace Business {
 
         public string Number { get; set; }
 
-        public byte[] Signature { get; set; }
+        public Signature Signature { get; set; }
 
         public static ProductSignature Create(Product product) {
             if (product == null)
@@ -25,7 +25,7 @@ namespace Business {
             return signature;
         }
 
-        private static byte[] ComputeSignature(Product product) {
+        private static Signature ComputeSignature(Product product) {
             if (product == null)
                 throw new ArgumentNullException("product");
 
@@ -39,7 +39,7 @@ namespace Business {
             });
 
             using (var hasher = MD5.Create()) {
-                return hasher.ComputeHash(Encoding.UTF8.GetBytes(json));
+                return new Signature(hasher.ComputeHash(Encoding.UTF8.GetBytes(json)));
             }
         }
     }

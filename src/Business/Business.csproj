@@ -58,8 +58,6 @@
     <Compile Include="ParseException.cs" />
     <Compile Include="ProductSignature.cs" />
     <Compile Include="Signature.cs" />
-    <Compile Include="ProductSignatureAlgorithm.cs" />
-    <Compile Include="ProductSignatureContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Category.cs" />
     <Compile Include="Product.cs" />
