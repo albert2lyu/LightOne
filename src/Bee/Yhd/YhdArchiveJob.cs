@@ -30,12 +30,14 @@ namespace Bee.Yhd {
             
             var index = 0;
             Parallel.ForEach(needProcessCategories,
-                new ParallelOptions { MaxDegreeOfParallelism = 3 },// 并发处理每个分类，这样可以大大加快处理速度
+                new ParallelOptions { MaxDegreeOfParallelism = 10 },// 并发处理每个分类，这样可以大大加快处理速度
                 (category) => {
                     try {
+                        var sw = new Stopwatch();
+
                         // 获取服务器上的产品信息签名
                         var productSignatures = ServerProxy.GetProductSignaturesByCategoryId(category.Id);
-                        
+
                         // 从网站上抓取产品信息
                         var downloadProducts = ds.ExtractProductsInCategory(category.Number)
                             .Distinct(new ProductComparer());   // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
@@ -44,8 +46,8 @@ namespace Bee.Yhd {
                         var changedProducts = FindChangedProducts(downloadProducts, productSignatures).ToList();
 
                         ServerProxy.UpsertProducts(category.Id, changedProducts);
-
-                        Logger.Info(string.Format("{3}/{4} {0}[{1}]{2} TOTAL[{5}] CHANGED[{6}]",
+                        //■◆▲●□◇△○
+                        Logger.Info(string.Format("{3}/{4} {0}[{1}]{2} □{5} △{6}",
                             string.Join("", Enumerable.Repeat(".", category.Level - 1)),
                             category.Number,
                             category.Name,
