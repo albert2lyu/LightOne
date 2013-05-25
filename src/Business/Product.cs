@@ -186,18 +186,10 @@ namespace Business {
 
         public static IEnumerable<Product> GetByCategoryId(string categoryId) {
             if (string.IsNullOrWhiteSpace(categoryId))
-                yield break;
+                return new Product[0];
 
-            var query = Query<Product>.EQ(p => p.CategoryIds, categoryId);
-            var productsCollection = DatabaseFactory.CreateMongoDatabase().GetCollection<Product>("products");
-
-            // 分批获取数据，防止查询mongodb超时
-            const int BATCH_SIZE = 100;
-            var count = productsCollection.Count(query);
-            for (var i = 0; i < count; i += BATCH_SIZE) {
-                foreach (var p in productsCollection.Find(query).SetSkip(i).SetLimit(BATCH_SIZE))
-                    yield return p;
-            }
+            return DatabaseFactory.CreateMongoDatabase().GetCollection<Product>("products")
+                .Find(Query<Product>.EQ(p => p.CategoryIds, categoryId));
         }
     }
 }
