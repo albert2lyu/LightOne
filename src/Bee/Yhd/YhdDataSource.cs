@@ -11,7 +11,7 @@ namespace Bee.Yhd
             return extractor.ExtractCategories();
         }
 
-        public IEnumerable<ProductProxy> ExtractProductsInCategory(string categoryNumber) {
+        public IEnumerable<Product> ExtractProductsInCategory(string categoryNumber) {
             var extractor = new YhdProductExtractor();
             return extractor.ExtractProductsInCategory(categoryNumber);
         }

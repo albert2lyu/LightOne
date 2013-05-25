@@ -38,10 +38,9 @@ namespace Bee.Yhd {
                             Interlocked.Increment(ref index), needProcessCategories.Count()));
 
                         var products = ds.ExtractProductsInCategory(category.Number)
-                            .Distinct(new ProductProxyComparer());   // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
+                            .Distinct(new ProductComparer());   // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
 
-                        new CategoryProductsProxy { CategoryId = category.Id, Products = products }
-                            .Upsert();
+                        ServerProxy.UpsertProducts(category.Id, products);
                     }
                     catch (Exception e) {
                         Logger.Error(string.Format("处理分类{0}{1}失败", category.Name, category.Number), e);

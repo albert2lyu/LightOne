@@ -11,15 +11,16 @@ using Common.Logging;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System.Web;
+using Business;
 
 namespace Bee.Yhd {
     class YhdProductExtractor {
         private readonly static ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public IEnumerable<ProductProxy> ExtractProductsInCategory(string categoryNumber) {
+        public IEnumerable<Product> ExtractProductsInCategory(string categoryNumber) {
             var pages = GetTotalPage(categoryNumber);
 
-            var results = new ConcurrentBag<ProductProxy>(); // 因为使用多线程填充，所以使用线程安全的集合类
+            var results = new ConcurrentBag<Product>(); // 因为使用多线程填充，所以使用线程安全的集合类
             var useParallel = true;
             if (useParallel) {
                 Parallel.For(0, pages,
@@ -94,8 +95,8 @@ namespace Bee.Yhd {
             }
         }
 
-        private IEnumerable<ProductProxy> ParseProductsFromHtmlDocument(HtmlDocument doc) {
-            var products = new List<ProductProxy>();
+        private IEnumerable<Product> ParseProductsFromHtmlDocument(HtmlDocument doc) {
+            var products = new List<Product>();
             foreach (var node in doc.DocumentNode.SelectNodes(@"//li[@class='producteg']")) {
                 foreach(var product in ParseProductsFromLiNode(node))
                     products.Add(product);
@@ -106,7 +107,7 @@ namespace Bee.Yhd {
             return products;
         }
 
-        private void SetRealPrice(List<ProductProxy> products) {
+        private void SetRealPrice(List<Product> products) {
             var index = 0;
             const int BATCH_SIZE = 20;
             while (index < products.Count) {
@@ -151,7 +152,7 @@ namespace Bee.Yhd {
             return int.Parse(m.Groups[1].Value);
         }
 
-        private IEnumerable<ProductProxy> ParseProductsFromLiNode(HtmlNode liTag) {
+        private IEnumerable<Product> ParseProductsFromLiNode(HtmlNode liTag) {
             var bookNode = liTag.SelectSingleNode(@"./div[contains(@class, 'bookDetail')]");
             if (bookNode == null) {
                 // 普通商品
@@ -169,7 +170,7 @@ namespace Bee.Yhd {
             }
         }
 
-        private ProductProxy ParseNormalProductFromDivNode(HtmlNode divTag) {
+        private Product ParseNormalProductFromDivNode(HtmlNode divTag) {
             var productATag = divTag.SelectSingleNode(@"./a[@class='title']");
             if (productATag == null)
                 throw new ParseException("无法找到产品标签：div > a[class=\"title\"]");
@@ -202,7 +203,7 @@ namespace Bee.Yhd {
                 throw new ParseException("无法找到产品价格标签：div > p[class=\"price\"] > strong");
             var price = ParsePriceFromString(priceTag.InnerText);
 
-            return new ProductProxy {
+            return new Product {
                 Number = number,
                 Name = name,
                 Url = url,
@@ -212,7 +213,7 @@ namespace Bee.Yhd {
             };
         }
 
-        private ProductProxy ParseBookProductFromLiNode(HtmlNode liTag) {
+        private Product ParseBookProductFromLiNode(HtmlNode liTag) {
             var productATag = liTag.SelectSingleNode(@".//a[@class='title']");
             if (productATag == null)
                 throw new ParseException("无法找到产品标签：li >> a[class=\"title\"]");
@@ -245,7 +246,7 @@ namespace Bee.Yhd {
                 throw new ParseException("无法找到产品价格标签：li > div > p > span > strong");
             var price = ParsePriceFromString(priceTag.InnerText);
 
-            return new ProductProxy {
+            return new Product {
                 Number = number,
                 Name = name,
                 Url = url,

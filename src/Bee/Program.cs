@@ -15,7 +15,7 @@ namespace Bee {
             sw.Start();
             var ds = new YhdDataSource();
             var products = ds.ExtractProductsInCategory("28988")
-                                .Distinct(new ProductProxyComparer())   // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
+                                .Distinct(new ProductComparer())   // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
                                 .ToList();
             foreach (var p in products.OrderBy(p=>p.Price)) {
                 Console.WriteLine(p.Price + "\t" + p.Name);

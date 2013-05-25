@@ -72,9 +72,7 @@
     <Compile Include="ServerProxy.cs" />
     <Compile Include="HttpClient.cs" />
     <Compile Include="ParseException.cs" />
-    <Compile Include="ProductProxy.cs" />
-    <Compile Include="ProductProxyComparer.cs" />
-    <Compile Include="CategoryProductsProxy.cs" />
+    <Compile Include="ProductComparer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProxyHelper.cs" />
