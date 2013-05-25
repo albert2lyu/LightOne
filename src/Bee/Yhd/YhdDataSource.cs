@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Business;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Bee.Yhd
 {
     class YhdDataSource {
-        public IEnumerable<CategoryProxy> ExtractCategories() {
+        public IEnumerable<Category> ExtractCategories() {
             var extractor = new YhdCategoryExtractor();
             return extractor.ExtractCategories();
         }

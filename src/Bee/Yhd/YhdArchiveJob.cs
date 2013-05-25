@@ -23,12 +23,12 @@ namespace Bee.Yhd {
             Logger.Info(string.Format("下载到{0}个分类", downloadedCategories.Count));
             
             // 保存分类数据并返回需要继续处理的分类
-            var needProcessCategories = CategoryProxy.Upsert(downloadedCategories);
+            var needProcessCategories = ServerProxy.UpsertCategories(downloadedCategories);
             Logger.Info(string.Format("需要处理{0}个分类", needProcessCategories.Count()));
             
             var index = 0;
             Parallel.ForEach(needProcessCategories,
-                new ParallelOptions { MaxDegreeOfParallelism = 3 },// 并发处理每个分类，这样可以大大加快处理速度
+                new ParallelOptions { MaxDegreeOfParallelism = 1 },// 并发处理每个分类，这样可以大大加快处理速度
                 (category) => {
                     try {
                         Logger.Info(string.Format("{3}/{4} {0}[{1}]{2}",

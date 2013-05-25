@@ -6,12 +6,13 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Common.Logging;
 using HtmlAgilityPack;
+using Business;
 
 namespace Bee.Yhd {
     class YhdCategoryExtractor {
         private readonly static ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public IEnumerable<CategoryProxy> ExtractCategories() {
+        public IEnumerable<Category> ExtractCategories() {
             var html = DownloadHtmlFromServer();
             var categories = ParseCategoriesFromHtml(html);
             return categories;
@@ -36,7 +37,7 @@ namespace Bee.Yhd {
             }
         }
 
-        private IEnumerable<CategoryProxy> ParseCategoriesFromHtml(HtmlDocument html) {
+        private IEnumerable<Category> ParseCategoriesFromHtml(HtmlDocument html) {
             //Logger.Info(html.DocumentNode.OuterHtml);
             // 已服务方式运行，需要安装TMG代理
             var sort = 0;
@@ -72,7 +73,7 @@ namespace Bee.Yhd {
         /// <param name="outerNode"></param>
         /// <param name="parentCategory"></param>
         /// <returns></returns>
-        private IEnumerable<KeyValuePair<CategoryProxy, HtmlNode>> ParseCategories(string xpath, HtmlNode outerNode, CategoryProxy parentCategory, int level) {
+        private IEnumerable<KeyValuePair<Category, HtmlNode>> ParseCategories(string xpath, HtmlNode outerNode, Category parentCategory, int level) {
             var nodes = outerNode.SelectNodes(xpath);
             if (nodes == null)
                 yield break;
@@ -81,7 +82,7 @@ namespace Bee.Yhd {
                 category.Level = level;
                 if (parentCategory != null && !string.IsNullOrWhiteSpace(parentCategory.Number))
                     category.ParentNumber = parentCategory.Number;
-                yield return new KeyValuePair<CategoryProxy, HtmlNode>(category, node);
+                yield return new KeyValuePair<Category, HtmlNode>(category, node);
             }
         }
 
@@ -104,11 +105,11 @@ namespace Bee.Yhd {
             return number;
         }
 
-        private CategoryProxy ParseCategoryFromANode(HtmlNode aNode) {
+        private Category ParseCategoryFromANode(HtmlNode aNode) {
             var url = aNode.GetAttributeValue("href", string.Empty);
             var name = aNode.InnerText;
             var number = ParseCategoryNumberFromUrl(url);
-            return new CategoryProxy { Number = number, Url = url, Name = name, Source = "yhd" };
+            return new Category { Number = number, Url = url, Name = name, Source = "yhd" };
         }
     }
 }
