@@ -8,6 +8,7 @@ using System.Threading;
 using Common.Logging;
 using Newtonsoft.Json;
 using System.Configuration;
+using System.Threading.Tasks;
 
 namespace Bee {
     public static class ProxyHelper {
@@ -36,8 +37,9 @@ namespace Bee {
             }
         }
 
-        public static T Get<T>(string urlFormat, params string[] urlArgs){
+        public static T Get<T>(string urlFormat, params string[] urlArgs) {
             return ProxyHelper.Execute<T>((client) => {
+                //return client.DownloadString(string.Format(urlFormat, urlArgs));
                 return client.DownloadString(string.Format(urlFormat, urlArgs));
             });
         }
