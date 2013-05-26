@@ -38,16 +38,19 @@ namespace Bee {
         //}
 
         public async static Task<T> GetAsync<T>(string urlFormat, string[] urlArgs, int retryTimes = 0) {
+            var url = string.Format(urlFormat, urlArgs);
             try {
                 using (var client = new WebClient()) {
                     client.Encoding = Encoding.UTF8;
                     client.BaseAddress = BaseUrl;
 
-                    var response = await client.DownloadStringTaskAsync(string.Format(urlFormat, urlArgs));
+                    var response = await client.DownloadStringTaskAsync(url);
                     return JsonConvert.DeserializeObject<T>(response);
                 }
             }
             catch (Exception e) {
+                Logger.Warn(string.Format("{0}发送http请求异常", url), e);
+                return default(T);
                 //if (retryTimes < 4) {
                 //    retryTimes++;
                 //    var retryInterval = TimeSpan.FromSeconds(10 * retryTimes);
@@ -82,6 +85,8 @@ namespace Bee {
                 }
             }
             catch (Exception e) {
+                Logger.Warn(string.Format("{0}发送http请求异常", url), e);
+                return default(T);
                 //if (retryTimes < 4) {
                 //    retryTimes++;
                 //    var retryInterval = TimeSpan.FromSeconds(10 * retryTimes);
@@ -89,7 +94,7 @@ namespace Bee {
                 //    Thread.Sleep(retryInterval);
                 //    return GetAsync<T>(urlFormat, urlArgs, retryTimes);
                 //}
-                throw e;
+                //throw e;
             }
         }
 

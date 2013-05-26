@@ -29,7 +29,7 @@ namespace Bee.Yhd {
             var needProcessCategories = upsertCategoriesTask.Result;
             Logger.Info(string.Format("需要处理{0}个分类", needProcessCategories.Count()));
 
-            var taskLock = new SemaphoreSlim(initialCount: 10);
+            var taskLock = new SemaphoreSlim(initialCount: 20);
             var tasks = needProcessCategories.Select(async (category, index) => {
                 await taskLock.WaitAsync();
                 try {
