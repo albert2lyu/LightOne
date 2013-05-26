@@ -29,8 +29,9 @@ namespace Bee.Yhd {
             var needProcessCategories = upsertCategoriesTask.Result;
             Logger.Info(string.Format("需要处理{0}个分类", needProcessCategories.Count()));
 
-
+            var taskLock = new SemaphoreSlim(initialCount: 10);
             var tasks = needProcessCategories.Select(async (category, index) => {
+                await taskLock.WaitAsync();
                 try {
                     var result = await ProcessCategoryAsync(category);
                     //■◆▲●□◇△○
@@ -42,6 +43,9 @@ namespace Bee.Yhd {
                 }
                 catch (Exception e) {
                     Logger.Error(string.Format("处理分类{0}{1}失败", category.Name, category.Number), e);
+                }
+                finally {
+                    taskLock.Release();
                 }
             });
 
@@ -62,7 +66,7 @@ namespace Bee.Yhd {
             // 找到发生变化的产品
             var changedProducts = FindChangedProducts(downloadProducts, productSignatures).ToList();
 
-            ServerProxy.UpsertProductsAsync(category.Id, changedProducts);
+            await ServerProxy.UpsertProductsAsync(category.Id, changedProducts);
 
             return new {
                 Total = downloadProducts.Count(),

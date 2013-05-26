@@ -10,7 +10,7 @@ namespace Bee {
             return await ProxyHelper.PostAsync<IEnumerable<Category>>("Categories/Upsert", categories);
         }
 
-        public async static void UpsertProductsAsync(string categoryId, IEnumerable<Product> products) {
+        public async static Task UpsertProductsAsync(string categoryId, IEnumerable<Product> products) {
             await ProxyHelper.PostAsync<object>("CategoryProducts/Upsert", new {
                 CategoryId = categoryId,
                 Products = products
