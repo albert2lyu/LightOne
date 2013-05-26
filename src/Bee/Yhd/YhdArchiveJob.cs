@@ -53,7 +53,9 @@ namespace Bee.Yhd {
             var productSignatures = ServerProxy.GetProductSignaturesByCategoryId(category.Id);
 
             // 从网站上抓取产品信息
-            var downloadProducts = YhdDataSource.ExtractProductsInCategory(category.Number)
+            var downloadTask = YhdDataSource.ExtractProductsInCategoryAsync(category.Number);
+            downloadTask.Wait();
+            var downloadProducts = downloadTask.Result
                 .Distinct(new ProductComparer());   // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
 
             // 找到发生变化的产品

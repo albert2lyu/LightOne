@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Bee.Yhd
 {
@@ -11,9 +12,9 @@ namespace Bee.Yhd
             return extractor.ExtractCategories();
         }
 
-        public static IEnumerable<Product> ExtractProductsInCategory(string categoryNumber) {
+        public async static Task<IEnumerable<Product>> ExtractProductsInCategoryAsync(string categoryNumber) {
             var extractor = new YhdProductExtractor();
-            return extractor.ExtractProductsInCategory(categoryNumber);
+            return await extractor.ExtractProductsInCategoryAsync(categoryNumber);
         }
     }
 }

@@ -5,6 +5,7 @@ using Bee.Yhd;
 using Common.Logging;
 using Quartz;
 using Quartz.Impl;
+using System.Threading.Tasks;
 
 namespace Bee {
     public class Program {
@@ -13,7 +14,10 @@ namespace Bee {
         private static void MyTest() {
             var sw = new Stopwatch();
             sw.Start();
-            var products = YhdDataSource.ExtractProductsInCategory("28980")
+            var task = YhdDataSource.ExtractProductsInCategoryAsync("28980");
+            task.Wait();
+
+            var products = task.Result
                                 .Distinct(new ProductComparer())   // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
                                 .ToList();
             

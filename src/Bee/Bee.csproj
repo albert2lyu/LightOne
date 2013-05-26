@@ -70,7 +70,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ServerProxy.cs" />
-    <Compile Include="HttpClient.cs" />
     <Compile Include="ParseException.cs" />
     <Compile Include="ProductComparer.cs" />
     <Compile Include="Program.cs" />

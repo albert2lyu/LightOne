@@ -19,73 +19,31 @@ namespace Bee.Yhd {
     class YhdProductExtractor {
         private readonly static ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public IEnumerable<Product> ExtractProductsInCategory(string categoryNumber) {
-            // 不用Parallel，21秒，用了11秒
-            var pages = GetTotalPage(categoryNumber);
+        public async Task<IEnumerable<Product>> ExtractProductsInCategoryAsync(string categoryNumber) {
+            var pages = await GetTotalPageAsync(categoryNumber);
 
             var results = new ConcurrentBag<Product>(); // 因为使用多线程填充，所以使用线程安全的集合类
-            var method = 3;
-            if (method == 1) {
-                Parallel.For(0, pages,
-                    i => {
-                        var page = i + 1;
-                        var doc = GetResponseFromServer(categoryNumber, page);
-                        if (doc != null) {
-                            var products = ParseProductsFromHtmlDocument(doc);
-                            foreach(var product in products)
-                                results.Add(product);
-                        }
-                    });
-            }
-            else if (method == 2) {
-                foreach (var page in Enumerable.Range(1, pages)) {
-                    var doc = GetResponseFromServer(categoryNumber, page);
-                    if (doc != null) {
-                        var products = ParseProductsFromHtmlDocument(doc);
-                        foreach (var product in products)
-                            results.Add(product);
-                    }
+
+            await Task.WhenAll(Enumerable.Range(1, pages).Select(async page => {
+                var doc = await DownloadProductListDocumentAsync(categoryNumber, page);
+                if (doc != null) {
+                    var products = ParseProductsFromHtmlDocument(doc);
+                    foreach (var product in products)
+                        results.Add(product);
+                        //yield return product;
                 }
-            }
-            else {
-                Task.WaitAll(Enumerable.Range(1, pages).Select(async page => {
-                    var doc = await GetResponseFromServerAsync(categoryNumber, page);
-                    if (doc != null) {
-                        var products = ParseProductsFromHtmlDocument(doc);
-                        foreach (var product in products)
-                            results.Add(product);
-                    }
-                }).ToArray());
-            }
+            }));
 
             return results;
         }
 
-        private int GetTotalPage(string categoryNumber) {
+        private async Task<int> GetTotalPageAsync(string categoryNumber) {
             // 爬第一页的数据，为了解析页码
-            var doc = GetResponseFromServer(categoryNumber, 1);
+            var doc = await DownloadProductListDocumentAsync(categoryNumber, 1);
             if (doc == null || IsEmptyResult(doc.DocumentNode))
                 return 0;
 
             return ParseTotalPage(doc.DocumentNode);
-        }
-
-        private string DownloadProductListHtml(string url) {
-            //Logger.Debug("start " + url.GetHashCode());
-            using (var webClient = new WebClient()) {
-                webClient.Headers.Add(HttpRequestHeader.Cookie, "provinceId=2");    // 北京站
-                //webClient.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
-                webClient.Encoding = Encoding.UTF8;
-                var productSearchUrl = url;
-                var responseContent = webClient.DownloadString(productSearchUrl);
-
-                var html = JsonConvert.DeserializeAnonymousType(responseContent, new { value = string.Empty }).value;
-                if (string.IsNullOrWhiteSpace(html))
-                    throw new ParseException("无法反序列化Json响应内容，缺少value属性？");
-
-                //Logger.Debug("done  " + url.GetHashCode());
-                return html;
-            }
         }
 
         private async Task<string> DownloadProductListHtmlAsync(string url) {
@@ -105,55 +63,7 @@ namespace Bee.Yhd {
             }
         }
 
-        private HtmlDocument GetResponseFromServer(string categoryNumber, int page, int retryTimes = 0) {
-            var useAsync = true;
-            if (useAsync) {
-                try {
-                    var defaultHtml = DownloadProductListHtmlAsync(string.Format(@"http://www.yihaodian.com/ctg/searchPage/c{0}-/b0/a-s1-v0-p{1}-price-d0-f04-m1-rt0-pid-k/", categoryNumber, page));
-                    // 产品列表具有延迟加载功能，所以需要抓取两次才能获取到完整一页的内容
-                    var moreHtml = DownloadProductListHtmlAsync(string.Format(@"http://www.yihaodian.com/ctg/searchPage/c{0}-/b0/a-s1-v0-p{1}-price-d0-f04-m1-rt0-pid-k/?isGetMoreProducts=1", categoryNumber, page));
-
-                    //defaultHtml.Wait();
-                    //moreHtml.Wait();
-                    Task.WaitAll(defaultHtml, moreHtml);
-
-                    var doc = new HtmlDocument();
-                    doc.LoadHtml(new StringBuilder().Append(defaultHtml.Result).Append(moreHtml.Result).ToString());
-
-                    return doc;
-                }
-                catch (Exception e) {
-                    if (retryTimes < 3)
-                        return GetResponseFromServer(categoryNumber, page, retryTimes + 1);
-                    else {
-                        Logger.Warn(string.Format("抓取产品信息错误，分类{0}，页码{1}", categoryNumber, page), e);
-                        return null;
-                    }
-                }
-            }
-            else {
-                try {
-                    var defaultHtml = DownloadProductListHtml(string.Format(@"http://www.yihaodian.com/ctg/searchPage/c{0}-/b0/a-s1-v0-p{1}-price-d0-f04-m1-rt0-pid-k/", categoryNumber, page));
-                    // 产品列表具有延迟加载功能，所以需要抓取两次才能获取到完整一页的内容
-                    var moreHtml = DownloadProductListHtml(string.Format(@"http://www.yihaodian.com/ctg/searchPage/c{0}-/b0/a-s1-v0-p{1}-price-d0-f04-m1-rt0-pid-k/?isGetMoreProducts=1", categoryNumber, page));
-
-                    var doc = new HtmlDocument();
-                    doc.LoadHtml(new StringBuilder().Append(defaultHtml).Append(moreHtml).ToString());
-
-                    return doc;
-                }
-                catch (Exception e) {
-                    if (retryTimes < 3)
-                        return GetResponseFromServer(categoryNumber, page, retryTimes + 1);
-                    else {
-                        Logger.Warn(string.Format("抓取产品信息错误，分类{0}，页码{1}", categoryNumber, page), e);
-                        return null;
-                    }
-                }
-            }
-        }
-
-        private async Task<HtmlDocument> GetResponseFromServerAsync(string categoryNumber, int page, int retryTimes = 0) {
+        private async Task<HtmlDocument> DownloadProductListDocumentAsync(string categoryNumber, int page, int retryTimes = 0) {
             try {
                 var defaultHtml = await DownloadProductListHtmlAsync(string.Format(@"http://www.yihaodian.com/ctg/searchPage/c{0}-/b0/a-s1-v0-p{1}-price-d0-f04-m1-rt0-pid-k/", categoryNumber, page));
                 // 产品列表具有延迟加载功能，所以需要抓取两次才能获取到完整一页的内容
@@ -165,11 +75,14 @@ namespace Bee.Yhd {
                 return doc;
             }
             catch (Exception e) {
+                Logger.Warn(string.Format("抓取产品信息错误，分类{0}，页码{1}", categoryNumber, page), e);
+                return null;
+                //throw new ApplicationException(string.Format("下载产品信息错误，分类{0}，页码{1}", categoryNumber, page), e);
                 //if (retryTimes < 3)
                 //    return GetResponseFromServerAsync(categoryNumber, page, retryTimes + 1);
                 //else {
-                Logger.Warn(string.Format("抓取产品信息错误，分类{0}，页码{1}", categoryNumber, page), e);
-                return null;
+                //Logger.Warn(string.Format("抓取产品信息错误，分类{0}，页码{1}", categoryNumber, page), e);
+                //return null;
                 //}
             }
         }
@@ -187,7 +100,7 @@ namespace Bee.Yhd {
             return products;
         }
 
-        private void SetRealPrice(List<Product> products) {
+        private async void SetRealPrice(List<Product> products) {
             var index = 0;
             const int BATCH_SIZE = 20;
             while (index < products.Count) {
@@ -197,19 +110,22 @@ namespace Bee.Yhd {
                 var url = "http://busystock.i.yihaodian.com/busystock/restful/truestock?mcsite=1&provinceId=2&" +
                     string.Join("&", productsInBatch.Select(p => string.Format("pmIds={0}", p.Number)));
 
-                var json = HttpClient.DownloadString(url);
+                using (var webClient = new WebClient()) {
+                    webClient.Encoding = Encoding.UTF8;
+                    var json = await webClient.DownloadStringTaskAsync(url);
 
-                var productsPrices = JsonConvert.DeserializeAnonymousType(json, new[] { 
+                    var productsPrices = JsonConvert.DeserializeAnonymousType(json, new[] { 
                         new {
                             pmId = string.Empty,
                             productPrice = (decimal)0
                         }
                     });
 
-                foreach (var productPrice in productsPrices) {
-                    var product = products.FirstOrDefault(p => p.Number == productPrice.pmId);
-                    if (product != null)
-                        product.Price = productPrice.productPrice;
+                    foreach (var productPrice in productsPrices) {
+                        var product = products.FirstOrDefault(p => p.Number == productPrice.pmId);
+                        if (product != null)
+                            product.Price = productPrice.productPrice;
+                    }
                 }
             }
         }
