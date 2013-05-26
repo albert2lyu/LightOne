@@ -29,7 +29,7 @@ namespace Bee.Yhd {
             
             var index = 0;
             Parallel.ForEach(needProcessCategories,
-                new ParallelOptions { MaxDegreeOfParallelism = 1 },// 并发处理每个分类，这样可以大大加快处理速度
+                new ParallelOptions { MaxDegreeOfParallelism = 3 },// 并发处理每个分类，这样可以大大加快处理速度
                 (category) => {
                     try {
                         var result = ProcessCategory(category);
