@@ -183,7 +183,7 @@ namespace Bee.Yhd {
             //var name = productATag.GetAttributeValue("title", string.Empty);
             var name = ParseNameFromString(productATag.InnerText);
             if (string.IsNullOrWhiteSpace(name))
-                throw new ParseException("无法解析产品名称：{0}", productATag.InnerText);
+                throw new ParseException("无法解析产品名称：{0}", productATag.OuterHtml);
             var url = productATag.GetAttributeValue("href", string.Empty);
             if (string.IsNullOrWhiteSpace(url))
                 throw new ParseException("无法解析产品url：{0}", productATag.OuterHtml);
@@ -226,7 +226,7 @@ namespace Bee.Yhd {
             //var name = productATag.GetAttributeValue("title", string.Empty);
             var name = ParseNameFromString(productATag.InnerText);
             if (string.IsNullOrWhiteSpace(name))
-                throw new ParseException("无法解析产品名称：{0}", productATag.InnerText);
+                throw new ParseException("无法解析产品名称：{0}", productATag.OuterHtml);
             var url = productATag.GetAttributeValue("href", string.Empty);
             if (string.IsNullOrWhiteSpace(url))
                 throw new ParseException("无法解析产品url：{0}", productATag.OuterHtml);

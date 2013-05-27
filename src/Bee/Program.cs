@@ -14,7 +14,7 @@ namespace Bee {
         private static void MyTest() {
             var sw = new Stopwatch();
             sw.Start();
-            var task = YhdDataSource.ExtractProductsInCategoryAsync("5477");
+            var task = YhdDataSource.ExtractProductsInCategoryAsync("28441");
             task.Wait();
 
             var products = task.Result
@@ -27,9 +27,9 @@ namespace Bee {
         }
 
         public static void Main() {
-            //MyTest();
+            MyTest();
 
-            //return;
+            return;
 
             Logger.Info("启动");
 
