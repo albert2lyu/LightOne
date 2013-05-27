@@ -201,7 +201,7 @@ namespace Bee.Yhd {
             var priceTag = divTag.SelectSingleNode(@"./p[@class='price']//strong");
             if (priceTag == null)
                 throw new ParseException("无法找到产品价格标签：div > p[class=\"price\"] > strong");
-            var price = ParsePriceFromString(priceTag.InnerText);
+            var price = !string.IsNullOrWhiteSpace(priceTag.InnerText) ? ParsePriceFromString(priceTag.InnerText) : 0;
 
             return new Product {
                 Number = number,
@@ -244,7 +244,7 @@ namespace Bee.Yhd {
             var priceTag = liTag.SelectSingleNode(@"./div/p/span/strong");
             if (priceTag == null)
                 throw new ParseException("无法找到产品价格标签：li > div > p > span > strong");
-            var price = ParsePriceFromString(priceTag.InnerText);
+            var price = !string.IsNullOrWhiteSpace(priceTag.InnerText) ? ParsePriceFromString(priceTag.InnerText) : 0;
 
             return new Product {
                 Number = number,

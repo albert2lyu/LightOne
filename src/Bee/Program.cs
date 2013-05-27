@@ -14,7 +14,7 @@ namespace Bee {
         private static void MyTest() {
             var sw = new Stopwatch();
             sw.Start();
-            var task = YhdDataSource.ExtractProductsInCategoryAsync("28980");
+            var task = YhdDataSource.ExtractProductsInCategoryAsync("5477");
             task.Wait();
 
             var products = task.Result
@@ -24,7 +24,6 @@ namespace Bee {
             Console.WriteLine(products.Count);
             Console.WriteLine(sw.Elapsed);
             Console.ReadLine();
-            // 11s  361
         }
 
         public static void Main() {
