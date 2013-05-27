@@ -89,11 +89,10 @@ namespace Bee.Yhd {
 
 
         private IEnumerable<Product> ParseProductsFromHtmlDocument(HtmlDocument doc) {
-            var products = new List<Product>();
-            foreach (var node in doc.DocumentNode.SelectNodes(@"//li[@class='producteg']")) {
-                foreach(var product in ParseProductsFromLiNode(node))
-                    products.Add(product);
-            }
+            var products = doc.DocumentNode.SelectNodes(@"//li[@class='producteg']")
+                .AsParallel()
+                .SelectMany(node => ParseProductsFromLiNode(node))
+                .ToList();
             
             // 调用truestock页面，获取真实价格
             SetRealPrice(products);
@@ -111,20 +110,25 @@ namespace Bee.Yhd {
                     string.Join("&", productsInBatch.Select(p => string.Format("pmIds={0}", p.Number)));
 
                 using (var webClient = new WebClient()) {
-                    webClient.Encoding = Encoding.UTF8;
-                    var json = await webClient.DownloadStringTaskAsync(url);
+                    try {
+                        webClient.Encoding = Encoding.UTF8;
+                        var json = await webClient.DownloadStringTaskAsync(url);    // 这里出现异常
 
-                    var productsPrices = JsonConvert.DeserializeAnonymousType(json, new[] { 
-                        new {
-                            pmId = string.Empty,
-                            productPrice = (decimal)0
-                        }
-                    });
-
-                    foreach (var productPrice in productsPrices) {
-                        var product = products.FirstOrDefault(p => p.Number == productPrice.pmId);
-                        if (product != null)
-                            product.Price = productPrice.productPrice;
+                        var productsPrices = JsonConvert.DeserializeAnonymousType(json, new[] {
+                            new {
+                                pmId = string.Empty,
+                                productPrice = (decimal)0
+                            }
+                        });
+                        productsPrices.AsParallel()
+                            .ForAll(productPrice => {
+                                var product = products.FirstOrDefault(p => p.Number == productPrice.pmId);
+                                if (product != null)
+                                    product.Price = productPrice.productPrice;
+                            });
+                    }
+                    catch (Exception e) {
+                        Logger.Warn("调用获取价格接口异常", e);
                     }
                 }
             }
