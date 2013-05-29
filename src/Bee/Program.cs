@@ -27,9 +27,9 @@ namespace Bee {
         }
 
         public static void Main() {
-            MyTest();
+            //MyTest();
 
-            return;
+            //return;
 
             Logger.Info("启动");
 

@@ -30,8 +30,8 @@ namespace Bee
                 return 0;
 
             //Calculate the hash code for the ProductProxy. 
-            return (product.Source == null ? 0 : product.Source.GetHashCode()) ^
-                (product.Number == null ? 0 : product.Number.GetHashCode());
+            return 13 * (product.Source == null ? 0 : product.Source.GetHashCode()) +
+                17 * (product.Number == null ? 0 : product.Number.GetHashCode());
         }
     }
 }

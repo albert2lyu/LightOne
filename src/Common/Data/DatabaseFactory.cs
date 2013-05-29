@@ -12,7 +12,8 @@ namespace Common.Data
 		}
 
         public static MongoDatabase CreateMongoDatabase(string host = "localhost") {
-            var connectionString = string.Format("mongodb://{0}/?safe=true", host);
+            //var connectionString = string.Format("mongodb://{0}/?safe=true", host);
+            var connectionString = string.Format("mongodb://{0}/", host);
             var server = MongoServer.Create(connectionString);
             return server.GetDatabase("queen");
         }

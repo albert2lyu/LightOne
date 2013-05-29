@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayUtil.cs" />
+    <Compile Include="CategoryEqualityComparer.cs" />
     <Compile Include="CategoryProducts.cs" />
     <Compile Include="ParseException.cs" />
     <Compile Include="ProductSignature.cs" />

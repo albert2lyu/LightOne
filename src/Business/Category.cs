@@ -61,10 +61,16 @@ namespace Business
                 .Save(this);
         }
 
-        private static void DisableAll() {
+        private static IEnumerable<Category> GetBySource(string source) {
+            return DatabaseFactory.CreateMongoDatabase()
+                .GetCollection<Category>("categories")
+                .Find(Query<Category>.EQ(c => c.Source, source));
+        }
+
+        private static void DisableById(string categoryId) {
             DatabaseFactory.CreateMongoDatabase()
                 .GetCollection<Category>("categories")
-                .Update(Query.Null, Update<Category>.Set(c => c.Enable, false), UpdateFlags.Multi);
+                .Update(Query<Category>.EQ(c => c.Id, categoryId), Update<Category>.Set(c => c.Enable, false));
         }
 
         /// <summary>
@@ -72,11 +78,14 @@ namespace Business
         /// </summary>
         /// <param name="categories"></param>
         public static IEnumerable<Category> Upsert(IEnumerable<Category> categories) {
-            // 先禁用所有的分类
-            DisableAll();
+            var cat = categories.FirstOrDefault();
+            if (cat == null)
+                yield break;
+
+            var existsCategories = GetBySource(cat.Source).ToList();
 
             foreach (var category in categories) {
-                var existsCategory = GetBySourceAndNumber(category.Source, category.Number);
+                var existsCategory = existsCategories.FirstOrDefault(ec => ec.Source == category.Source && ec.Number == category.Number);
 
                 if (existsCategory == null) {
                     // 新分类
@@ -100,7 +109,11 @@ namespace Business
                 yield return category;
             }
 
-            
+            // 禁用已经不存在的分类
+            var notExistsCategories = existsCategories.Except(categories, new CategoryEqualityComparer());
+            foreach (var category in notExistsCategories) {
+                DisableById(category.Id);
+            }
         }
 
         public static Category Get(string id) {
