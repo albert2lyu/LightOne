@@ -17,10 +17,6 @@ namespace Bee {
             });
         }
 
-        //public static IEnumerable<ProductSignature> GetProductSignaturesByCategoryId(string categoryId) {
-        //    return ProxyHelper.Get<IEnumerable<ProductSignature>>("Products/GetSignaturesByCategoryId?categoryId={0}", categoryId);
-        //}
-
         public async static Task<IEnumerable<ProductSignature>> GetProductSignaturesByCategoryIdAsync(string categoryId) {
             return await ProxyHelper.GetAsync<IEnumerable<ProductSignature>>("Products/GetSignaturesByCategoryId?categoryId={0}", new[] { categoryId });
         }

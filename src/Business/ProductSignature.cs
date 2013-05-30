@@ -13,19 +13,7 @@ namespace Business {
 
         public Signature Signature { get; set; }
 
-        public static ProductSignature Create(Product product) {
-            if (product == null)
-                throw new ArgumentNullException("product");
-
-            var signature = new ProductSignature();
-            signature.Source = product.Source;
-            signature.Number = product.Number;
-            signature.Signature = ComputeSignature(product);
-
-            return signature;
-        }
-
-        private static Signature ComputeSignature(Product product) {
+        public static Signature ComputeSignature(Product product) {
             if (product == null)
                 throw new ArgumentNullException("product");
 

@@ -38,16 +38,7 @@ namespace Business {
 
         public List<ProductPriceHistory> PriceHistory { get; set; }
 
-        private bool IsSameWith(Product p) {
-            return p != null &&
-                Number == p.Number &&
-                Source == p.Source &&
-                Name == p.Name &&
-                Url == p.Url &&
-                ImgUrl == p.ImgUrl &&
-                Price == p.Price &&
-                ArrayUtil.Equals(CategoryIds, p.CategoryIds);
-        }
+        public Signature Signature { get; set; }
 
         public static Product GetBySourceAndNumber(string source, string number) {
             return DatabaseFactory.CreateMongoDatabase()
@@ -74,10 +65,6 @@ namespace Business {
 
             // 获取已经存在的产品
             var existsProduct = GetBySourceAndNumber(Source, Number);
-
-            // 如果和已经保存的产品信息对比没有发生任何变化
-            if (IsSameWith(existsProduct))
-                return false;
 
             if (existsProduct != null) {
                 Id = existsProduct.Id;
@@ -107,9 +94,6 @@ namespace Business {
             DatabaseFactory.CreateMongoDatabase()
                 .GetCollection<Product>("products")
                 .Save(this);
-
-            // 保存当前处理完成的产品对象签名
-            //container.Add(Source, Number, currentSignature);
 
             // 返回值：价格是否发生变化（新品或调价返回true），而不是产品的其他属性是否发生变化
             return existsProduct == null || existsProduct.Price != Price;

@@ -61,9 +61,12 @@ namespace Bee.Yhd {
             // 从网站上抓取产品信息
             var downloadTask = await YhdDataSource.ExtractProductsInCategoryAsync(category.Number);
             // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
-            var downloadProducts = downloadTask.Distinct(new ProductComparer());
+            var downloadProducts = downloadTask.AsParallel().Distinct(new ProductComparer());
 
-            // 找到发生变化的产品
+            // 计算刚下载的产品的签名
+            downloadProducts.AsParallel().ForAll(p => p.Signature = ProductSignature.ComputeSignature(p));
+
+            // 找到签名发生变化的产品
             var changedProducts = FindChangedProducts(downloadProducts, productSignatures).ToList();
 
             await ServerProxy.UpsertProductsAsync(category.Id, changedProducts);
@@ -78,13 +81,11 @@ namespace Bee.Yhd {
             Func<string, string, string> createKey = (source, number) => {
                 return source + "-" + number;
             };
-            var existsProductsMap = existsProducts.GroupBy(p => createKey(p.Source, p.Number), p => p.Signature).ToDictionary(p => p.Key, p => p.First());
-            
-            return products.Where(p=> {
-                var key = createKey(p.Source, p.Number);
-                var signature = ProductSignature.Create(p).Signature;
+            var existsProductsMap = existsProducts.AsParallel().GroupBy(p => createKey(p.Source, p.Number), p => p.Signature).ToDictionary(p => p.Key, p => p.First());
 
-                return !existsProductsMap.ContainsKey(key) || !Signature.IsMatch(existsProductsMap[key], signature);
+            return products.AsParallel().Where(p => {
+                var key = createKey(p.Source, p.Number);
+                return !existsProductsMap.ContainsKey(key) || !Signature.IsMatch(existsProductsMap[key], p.Signature);
             });
         }
     }
