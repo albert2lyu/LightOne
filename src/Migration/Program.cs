@@ -16,12 +16,15 @@ namespace Migration {
             if (args.Length == 0) {
                 Console.WriteLine("fixprice <ratio>");
                 Console.WriteLine("delcat");
+                Console.WriteLine("delp <daysago>");
                 return;
             }
             if (args[0] == "fixprice")
                 new FixPrice().Run(decimal.Parse(args[1]));
             else if (args[0] == "delcat")
                 new RemoveDisabledCategories().Run();
+            else if (args[0] == "delp")
+                new DeleteProducts().Run(int.Parse(args[1]));
         }
 
         

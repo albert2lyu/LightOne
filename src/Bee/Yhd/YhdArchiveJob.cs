@@ -29,7 +29,7 @@ namespace Bee.Yhd {
             var needProcessCategories = upsertCategoriesTask.Result;
             Logger.Info(string.Format("需要处理{0}个分类", needProcessCategories.Count()));
 
-            var taskLock = new SemaphoreSlim(initialCount: 20);
+            var taskLock = new SemaphoreSlim(initialCount: 2);
             var tasks = needProcessCategories.Select(async (category, index) => {
                 await taskLock.WaitAsync();
                 try {
@@ -61,7 +61,7 @@ namespace Bee.Yhd {
             // 从网站上抓取产品信息
             var downloadTask = await YhdDataSource.ExtractProductsInCategoryAsync(category.Number);
             // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
-            var downloadProducts = downloadTask.AsParallel().Distinct(new ProductComparer());
+            var downloadProducts = downloadTask.Distinct(new ProductComparer());
 
             // 计算刚下载的产品的签名
             downloadProducts.AsParallel().ForAll(p => p.Signature = ProductSignature.ComputeSignature(p));
