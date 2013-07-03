@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FusionChartsDriver", "Fusio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{632E6F6B-5D4E-4981-B82D-E09774E664DD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Daemon", "Daemon\Daemon.csproj", "{557F2527-D326-41DC-B5AB-6CE1E7D6BF94}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{632E6F6B-5D4E-4981-B82D-E09774E664DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{632E6F6B-5D4E-4981-B82D-E09774E664DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{632E6F6B-5D4E-4981-B82D-E09774E664DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{557F2527-D326-41DC-B5AB-6CE1E7D6BF94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{557F2527-D326-41DC-B5AB-6CE1E7D6BF94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{557F2527-D326-41DC-B5AB-6CE1E7D6BF94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{557F2527-D326-41DC-B5AB-6CE1E7D6BF94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Business;
 using Queen.Models;
+using System.Collections.Generic;
 
 namespace Queen.Controllers
 {
@@ -11,7 +12,14 @@ namespace Queen.Controllers
         //[OutputCache(Duration=600)]
         public ActionResult PriceReduced(string categoryId) {
             var category = Category.Get(categoryId);
-            var products = Product.GetByPriceReduced(categoryId, 150);
+
+            IEnumerable<Product> products = new Product[0];
+            var ratioRankingRepo = new RatioRankingRepo();
+            var ranking = ratioRankingRepo.GetByCategoryId(categoryId);
+            if (ranking != null) {
+                products = ranking.ProductIds.Select(id => Product.GetById(id));
+            }
+            //var products = Product.GetByPriceReduced(categoryId, 150, 24);
 
             ViewBag.CategoryName = category != null ? category.Name : string.Empty;
             ViewBag.CategoryId = category != null ? category.Id : string.Empty;

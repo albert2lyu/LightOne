@@ -17,6 +17,7 @@ namespace Migration {
                 Console.WriteLine("fixprice <ratio>");
                 Console.WriteLine("delcat");
                 Console.WriteLine("delp <daysago>");
+                Console.WriteLine("cacl");
                 return;
             }
             if (args[0] == "fixprice")
@@ -25,6 +26,8 @@ namespace Migration {
                 new RemoveDisabledCategories().Run();
             else if (args[0] == "delp")
                 new DeleteProducts().Run(int.Parse(args[1]));
+            else if (args[0] == "cacl")
+                new Cacl().Run();
         }
 
         

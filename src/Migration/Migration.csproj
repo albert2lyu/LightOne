@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cacl.cs" />
     <Compile Include="DeleteProducts.cs" />
     <Compile Include="RemoveDisabledCategories.cs" />
     <Compile Include="FixPrice.cs" />
