@@ -10,10 +10,11 @@ using System.Collections.Generic;
 using Business;
 
 namespace Bee.Yhd {
-    class YhdArchiveJob : IStatefulJob {
+    [DisallowConcurrentExecution]
+    class YhdArchiveJob : IJob {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public void Execute(JobExecutionContext context) {
+        public void Execute(IJobExecutionContext context) {
             // 先清空所有分类，然后再保存抓取到的分类，这样可以更新分类的变化
             Logger.Info("开始抓取一号店数据");
             var stopwatch = new Stopwatch();

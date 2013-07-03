@@ -41,14 +41,10 @@ namespace Bee {
         }
 
         private static void ScheduleJob(IScheduler scheduler) {
-            var jobType = typeof(YhdArchiveJob);
-            var jobName = jobType.Name;
-            var triggerName = jobType.Name;
-
-            var job = new JobDetail(jobName, jobType);
-            var trigger = TriggerUtils.MakeMinutelyTrigger(triggerName, 20, SimpleTrigger.RepeatIndefinitely);
-
-            scheduler.ScheduleJob(job, trigger);
+            const int INTERVAL_IN_SECONDS = 5;
+            scheduler.ScheduleJob(
+                JobBuilder.Create<YhdArchiveJob>().WithIdentity("YhdArchiveJob").Build(),
+                TriggerBuilder.Create().WithIdentity("YhdArchiveTrigger").StartNow().WithSimpleSchedule(x => x.RepeatForever().WithIntervalInSeconds(INTERVAL_IN_SECONDS)).Build());
         }
     }
 }

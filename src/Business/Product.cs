@@ -104,9 +104,9 @@ namespace Business {
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
-        public static IEnumerable<Product> GetByPriceReduced(string categoryId, int count) {
+        public static IEnumerable<Product> GetByPriceReduced(string categoryId, int count, int hoursAgo) {
             var query = Query.And(Query<Product>.LT(p => p.ChangedRatio, 0),
-                Query<Product>.GT(p => p.UpdateTime, DateTime.Now.AddHours(-24)));
+                Query<Product>.GT(p => p.UpdateTime, DateTime.Now.AddHours(-hoursAgo)));
             if (!string.IsNullOrWhiteSpace(categoryId))
                 query = Query.And(query, Query<Product>.EQ(p => p.CategoryIds, categoryId));
 

@@ -52,7 +52,9 @@ namespace Business
         }
 
         private bool NeedReExtract() {
-            return Level == 3 && ProductsUpdateTime + TimeSpan.FromHours(StableTimes) < DateTime.Now;
+            return Level == 3
+                && ProductsUpdateTime + TimeSpan.FromHours(StableTimes) < DateTime.Now;
+                //&& GetAncestorCategories(Id).All(c => c.Number != "123" && c.Number != "25228");
         }
 
         private void Save() {
