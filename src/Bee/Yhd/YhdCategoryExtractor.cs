@@ -19,7 +19,7 @@ namespace Bee.Yhd {
         }
 
         private HtmlDocument DownloadHtmlFromServer(int retryTimes = 0) {
-            const string ALL_PRODUCT_URL = @"http://www.yihaodian.com/product/listAll.do";
+            const string ALL_PRODUCT_URL = @"http://www.yihaodian.com/marketing/allproduct.html";
             try {
                 var webClient = new HtmlWeb();
                 return webClient.Load(ALL_PRODUCT_URL);

@@ -15,7 +15,6 @@ namespace Bee.Yhd {
 
         public void Execute(JobExecutionContext context) {
             // 先清空所有分类，然后再保存抓取到的分类，这样可以更新分类的变化
-            //YhdCategory.DeleteAll();
             Logger.Info("开始抓取一号店数据");
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -29,7 +28,7 @@ namespace Bee.Yhd {
             var needProcessCategories = upsertCategoriesTask.Result;
             Logger.Info(string.Format("需要处理{0}个分类", needProcessCategories.Count()));
 
-            var taskLock = new SemaphoreSlim(initialCount: 2);
+            var taskLock = new SemaphoreSlim(initialCount: 4);
             var tasks = needProcessCategories.Select(async (category, index) => {
                 await taskLock.WaitAsync();
                 try {
