@@ -7,33 +7,30 @@ using System.Threading;
 using Common.Logging;
 using HtmlAgilityPack;
 using Business;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace Bee.Yhd {
     class YhdCategoryExtractor {
         private readonly static ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public IEnumerable<Category> ExtractCategories() {
-            var html = DownloadHtmlFromServer();
+        public async Task<IEnumerable<Category>> ExtractCategories() {
+            var html = await DownloadHtmlFromServer();
             var categories = ParseCategoriesFromHtml(html);
             return categories;
         }
 
-        private HtmlDocument DownloadHtmlFromServer(int retryTimes = 0) {
+        private async Task<HtmlDocument> DownloadHtmlFromServer() {
             const string ALL_PRODUCT_URL = @"http://www.yihaodian.com/marketing/allproduct.html";
-            try {
-                var webClient = new HtmlWeb();
-                return webClient.Load(ALL_PRODUCT_URL);
-            }
-            catch (Exception e) {
-                Logger.Warn("下载分类信息异常", e);
-                if (retryTimes < 5) {
-                    retryTimes++;
-                    Logger.Info(string.Format("30秒后第{0}次重试", retryTimes));
-                    Thread.Sleep(TimeSpan.FromSeconds(30));
-                    return DownloadHtmlFromServer(retryTimes);
-                }
-                else
-                    throw;
+
+            using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate })) {
+                var responseContent = await client.GetStringAsync(ALL_PRODUCT_URL);
+
+                var doc = new HtmlDocument();
+                doc.LoadHtml(responseContent);
+                return doc;
             }
         }
 

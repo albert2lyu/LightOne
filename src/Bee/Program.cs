@@ -6,10 +6,11 @@ using Common.Logging;
 using Quartz;
 using Quartz.Impl;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Bee {
     public class Program {
-        private static readonly ILog Logger = LogManager.GetLogger(typeof(Program));
+        private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private static void MyTest() {
             var sw = new Stopwatch();
@@ -28,7 +29,6 @@ namespace Bee {
 
         public static void Main() {
             //MyTest();
-
             //return;
 
             Logger.Info("启动");

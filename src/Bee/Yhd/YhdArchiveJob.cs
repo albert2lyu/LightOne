@@ -15,19 +15,22 @@ namespace Bee.Yhd {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public void Execute(IJobExecutionContext context) {
-            // 先清空所有分类，然后再保存抓取到的分类，这样可以更新分类的变化
-            Logger.Info("开始抓取一号店数据");
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var downloadedCategories = YhdDataSource.ExtractCategories().ToList();
-            Logger.Info(string.Format("下载到{0}个分类", downloadedCategories.Count));
+            Logger.Info("开始抓取一号店数据");
+
+            var extractCategoriesTask = YhdDataSource.ExtractCategories();
+            extractCategoriesTask.Wait();
+            var downloadedCategories = extractCategoriesTask.Result.ToList();
+            Logger.InfoFormat("下载到{0}个分类", downloadedCategories.Count);
             
             // 保存分类数据并返回需要继续处理的分类
-            var upsertCategoriesTask = ServerProxy.UpsertCategoriesAsync(downloadedCategories);
-            upsertCategoriesTask.Wait();
-            var needProcessCategories = upsertCategoriesTask.Result;
-            Logger.Info(string.Format("需要处理{0}个分类", needProcessCategories.Count()));
+            //var upsertCategoriesTask = ServerProxy.UpsertCategoriesAsync(downloadedCategories);
+            //upsertCategoriesTask.Wait();
+            //var needProcessCategories = upsertCategoriesTask.Result;
+            var needProcessCategories = Category.Upsert(downloadedCategories).ToList();
+            Logger.InfoFormat("需要处理{0}个分类", needProcessCategories.Count);
 
             var taskLock = new SemaphoreSlim(initialCount: 4);
             var tasks = needProcessCategories.Select(async (category, index) => {
@@ -56,7 +59,9 @@ namespace Bee.Yhd {
 
         private async Task<dynamic> ProcessCategoryAsync(Category category) {
             // 获取服务器上的产品信息签名
-            var productSignatures = await ServerProxy.GetProductSignaturesByCategoryIdAsync(category.Id);
+            //var productSignatures = await ServerProxy.GetProductSignaturesByCategoryIdAsync(category.Id);
+            var products = Product.GetByCategoryId(category.Id);
+            var productSignatures = products.Select(p => new ProductSignature { Source = p.Source, Number = p.Number, Signature = p.Signature });
 
             // 从网站上抓取产品信息
             var downloadTask = await YhdDataSource.ExtractProductsInCategoryAsync(category.Number);
@@ -69,7 +74,8 @@ namespace Bee.Yhd {
             // 找到签名发生变化的产品
             var changedProducts = FindChangedProducts(downloadProducts, productSignatures).ToList();
 
-            await ServerProxy.UpsertProductsAsync(category.Id, changedProducts);
+            //await ServerProxy.UpsertProductsAsync(category.Id, changedProducts);
+            new CategoryProducts { CategoryId = category.Id, Products = changedProducts }.Upsert();
 
             return new {
                 Total = downloadProducts.Count(),

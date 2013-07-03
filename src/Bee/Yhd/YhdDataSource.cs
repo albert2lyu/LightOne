@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Bee.Yhd
 {
     class YhdDataSource {
-        public static IEnumerable<Category> ExtractCategories() {
+        public async static Task<IEnumerable<Category>> ExtractCategories() {
             var extractor = new YhdCategoryExtractor();
-            return extractor.ExtractCategories();
+            return await extractor.ExtractCategories();
         }
 
         public async static Task<IEnumerable<Product>> ExtractProductsInCategoryAsync(string categoryNumber) {

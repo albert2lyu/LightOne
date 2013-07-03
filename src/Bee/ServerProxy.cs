@@ -5,7 +5,7 @@ using Business;
 using System.Threading.Tasks;
 
 namespace Bee {
-    class ServerProxy {
+    class ServerProxy1 {
         public async static Task<IEnumerable<Category>> UpsertCategoriesAsync(IEnumerable<Category> categories) {
             return await ProxyHelper.PostAsync<IEnumerable<Category>>("Categories/Upsert", categories);
         }
