@@ -12,12 +12,13 @@ namespace Daemon {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         static void Main(string[] args) {
-            Logger.Info("启动");
+            Logger.Info("Daemon启动");
+            return;
             
             var schedulerFactory = new StdSchedulerFactory();
             var scheduler = schedulerFactory.GetScheduler();
             scheduler.Start();
-
+            
             ScheduleRatioRankingJob(scheduler);
         }
 
