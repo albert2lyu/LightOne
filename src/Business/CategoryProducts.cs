@@ -10,7 +10,8 @@ namespace Business
         public IEnumerable<Product> Products { get; set; }
 
         public virtual void Upsert() {
-            var ancestorCategoryIds = Category.GetAncestorCategories(CategoryId).Select(c => c.Id).ToArray();
+            var categoryRepo = new CategoryRepo();
+            var ancestorCategoryIds = categoryRepo.GetAncestorCategories(CategoryId).Select(c => c.Id).ToArray();
 
             var hasChanges = false;
 
@@ -20,13 +21,13 @@ namespace Business
             }
 
             // 设置分类下产品的更新时间
-            Category.UpdateProductsUpdateTime(CategoryId, DateTime.Now);
+            categoryRepo.UpdateProductsUpdateTime(CategoryId, DateTime.Now);
 
             // 设置分类下产品的稳定次数
             if (hasChanges)
-                Category.ResetStableTimes(CategoryId);
+                categoryRepo.ResetStableTimes(CategoryId);
             else
-                Category.IncreaseStableTimes(CategoryId);
+                categoryRepo.IncreaseStableTimes(CategoryId);
         }
     }
 }

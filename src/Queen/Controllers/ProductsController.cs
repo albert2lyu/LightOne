@@ -9,9 +9,11 @@ namespace Queen.Controllers
 {
     public class ProductsController : Controller
     {
+        private readonly CategoryRepo _CategoryRepo = new CategoryRepo();
+
         //[OutputCache(Duration=600)]
         public ActionResult PriceReduced(string categoryId) {
-            var category = Category.Get(categoryId);
+            var category = _CategoryRepo.Get(categoryId);
 
             IEnumerable<Product> products = new Product[0];
             var ratioRankingRepo = new RatioRankingRepo();
@@ -33,7 +35,7 @@ namespace Queen.Controllers
             if (product == null)
                 return View("ProductNotExists");
 
-            var categories = Category.GetByIds(product.CategoryIds);
+            var categories = _CategoryRepo.GetByIds(product.CategoryIds);
             var form = new ProductDetailsForm(product, categories);
 
             return View(form);
