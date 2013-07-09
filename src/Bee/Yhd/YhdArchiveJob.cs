@@ -21,18 +21,9 @@ namespace Bee.Yhd {
 
             Logger.Info("开始抓取一号店数据");
 
-            var extractCategoriesTask = new YhdCategoryExtractor().Extract();
-            extractCategoriesTask.Wait();
-            var downloadedCategories = extractCategoriesTask.Result.ToList();
-            Logger.InfoFormat("下载到{0}个分类", downloadedCategories.Count);
-            return;
-            // 保存分类数据并返回需要继续处理的分类
-            //var upsertCategoriesTask = ServerProxy.UpsertCategoriesAsync(downloadedCategories);
-            //upsertCategoriesTask.Wait();
-            //var needProcessCategories = upsertCategoriesTask.Result;
-            var needProcessCategories = _CategoryArchiveService.Upsert(downloadedCategories).ToList();
-            Logger.InfoFormat("需要处理{0}个分类", needProcessCategories.Count);
-
+            var downloadedCategories = new YhdCategoryExtractor().Extract().Result;
+            var needProcessCategories = _CategoryArchiveService.Archive(downloadedCategories).OrderBy(c => c.ProductsUpdateTime);
+            
             var taskLock = new SemaphoreSlim(initialCount: 4);
             var tasks = needProcessCategories.Select(async (category, index) => {
                 await taskLock.WaitAsync();
@@ -40,13 +31,13 @@ namespace Bee.Yhd {
                     var result = await ProcessCategoryAsync(category);
                     //■◆▲●□◇△○
                     Logger.Info(string.Join(" ", new[]{
-                            string.Format("{0}/{1}", index + 1, needProcessCategories.Count()),
+                            string.Format("{0}", index + 1),
                             string.Format("[{0}]{1}", category.Number, category.Name),
                             string.Format("□{0} △{1}", result.Total, result.Changed)
                         }));
                 }
                 catch (Exception e) {
-                    Logger.Error(string.Format("处理分类{0}{1}失败", category.Name, category.Number), e);
+                    Logger.ErrorFormat("处理分类{0}{1}失败", e, category.Name, category.Number);
                 }
                 finally {
                     taskLock.Release();
@@ -55,7 +46,7 @@ namespace Bee.Yhd {
 
             Task.WaitAll(tasks.ToArray());
 
-            Logger.Info(string.Format("抓取一号店数据完成，用时{0:0.#}分", stopwatch.Elapsed.TotalMinutes));
+            Logger.InfoFormat("抓取一号店数据完成，用时{0:0.#}分", stopwatch.Elapsed.TotalMinutes);
         }
 
         private async Task<dynamic> ProcessCategoryAsync(Category category) {

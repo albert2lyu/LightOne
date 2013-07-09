@@ -33,9 +33,9 @@ namespace Bee {
 
             Logger.Info("启动");
 
-            new YhdArchiveJob().Execute(null);
-            Console.ReadKey(true);
-            return;
+            //new YhdArchiveJob().Execute(null);
+            //Console.ReadKey(true);
+            //return;
 
             var schedulerFactory = new StdSchedulerFactory();
             var scheduler = schedulerFactory.GetScheduler();

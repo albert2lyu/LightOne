@@ -73,6 +73,7 @@ namespace Bee.Yhd {
             var nodes = outerNode.SelectNodes(xpath);
             if (nodes == null)
                 yield break;
+
             foreach (var node in nodes) {
                 var category = ParseCategoryFromANode(node);
                 category.Level = level;
