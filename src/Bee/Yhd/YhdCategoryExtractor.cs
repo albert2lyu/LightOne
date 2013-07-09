@@ -16,17 +16,16 @@ namespace Bee.Yhd {
     class YhdCategoryExtractor {
         private readonly static ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public async Task<IEnumerable<Category>> ExtractCategories() {
-            var html = await DownloadHtmlFromServer();
-            var categories = ParseCategoriesFromHtml(html);
-            return categories;
+        public async Task<IEnumerable<Category>> Extract() {
+            var doc = await DownloadHtmlDocument();
+            return ParseCategories(doc);
         }
 
-        private async Task<HtmlDocument> DownloadHtmlFromServer() {
-            const string ALL_PRODUCT_URL = @"http://www.yihaodian.com/marketing/allproduct.html";
+        private async Task<HtmlDocument> DownloadHtmlDocument() {
+            const string URL = @"http://www.yihaodian.com/marketing/allproduct.html";
 
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate })) {
-                var responseContent = await client.GetStringAsync(ALL_PRODUCT_URL);
+                var responseContent = await client.GetStringAsync(URL);
 
                 var doc = new HtmlDocument();
                 doc.LoadHtml(responseContent);
@@ -34,13 +33,12 @@ namespace Bee.Yhd {
             }
         }
 
-        private IEnumerable<Category> ParseCategoriesFromHtml(HtmlDocument html) {
-            //Logger.Info(html.DocumentNode.OuterHtml);
-            // 已服务方式运行，需要安装TMG代理
+        private IEnumerable<Category> ParseCategories(HtmlDocument doc) {
+            Logger.Debug("解析分类html...");
             var sort = 0;
-            foreach (var outerNode in html.DocumentNode.SelectNodes(@"//div[@class='alonesort']")) {
+            foreach (var outerNode in doc.DocumentNode.SelectNodes(@"//div[@class='alonesort']")) {
                 var first = ParseCategories(".//h3/a", outerNode, null, 1).FirstOrDefault();
-                var firstCategory = first.Key;
+                var firstCategory = first.Category;
                 if (firstCategory == null)
                     throw new ParseException("没有找到一级分类");
                 firstCategory.Sort = sort++;
@@ -48,19 +46,20 @@ namespace Bee.Yhd {
 
                 // 解析二级分类
                 foreach (var second in ParseCategories(".//dt/a", outerNode, firstCategory, 2)) {
-                    var secondCategory = second.Key;
-                    var secondCategoryNode = second.Value;
+                    var secondCategory = second.Category;
+                    var secondCategoryNode = second.Node;
                     secondCategory.Sort = sort++;
                     yield return secondCategory;
 
                     // 解析三级分类
                     foreach (var third in ParseCategories("../..//dd//a", secondCategoryNode, secondCategory, 3)) {
-                        var thirdCategory = third.Key;
+                        var thirdCategory = third.Category;
                         thirdCategory.Sort = sort++;
                         yield return thirdCategory;
                     }
                 }
             }
+            Logger.Debug("完成解析");
         }
 
         /// <summary>
@@ -70,7 +69,7 @@ namespace Bee.Yhd {
         /// <param name="outerNode"></param>
         /// <param name="parentCategory"></param>
         /// <returns></returns>
-        private IEnumerable<KeyValuePair<Category, HtmlNode>> ParseCategories(string xpath, HtmlNode outerNode, Category parentCategory, int level) {
+        private IEnumerable<dynamic> ParseCategories(string xpath, HtmlNode outerNode, Category parentCategory, int level) {
             var nodes = outerNode.SelectNodes(xpath);
             if (nodes == null)
                 yield break;
@@ -79,7 +78,7 @@ namespace Bee.Yhd {
                 category.Level = level;
                 if (parentCategory != null && !string.IsNullOrWhiteSpace(parentCategory.Number))
                     category.ParentNumber = parentCategory.Number;
-                yield return new KeyValuePair<Category, HtmlNode>(category, node);
+                yield return new { Category = category, Node = node };
             }
         }
 
@@ -89,15 +88,16 @@ namespace Bee.Yhd {
         /// <param name="url"></param>
         /// <returns></returns>
         private string ParseCategoryNumberFromUrl(string url) {
-            var pattern = @"\/c(\d+)\-";
-            var regex = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            // url形如：http://www.yihaodian.com/ctg/s2/c21306-%E6%89%8B%E6%9C%BA%E9%80%9A%E8%AE%AF-%E6%95%B0%E7%A0%81%E7%94%B5%E5%99%A8/
+            const string PATTERN = @"\/c(\d+)\-";
+            var regex = new Regex(PATTERN, RegexOptions.Compiled | RegexOptions.IgnoreCase);
             var m = regex.Match(url);
             if (!m.Success)
-                throw new ParseException("从url:'{0}'中解析分类number失败，exp pattern:'{1}'", url, pattern);
+                throw new ParseException("从url:'{0}'中解析分类number失败，exp pattern:'{1}'", url, PATTERN);
 
             var number = m.Groups[1].Value;
             if (string.IsNullOrWhiteSpace(number))
-                throw new ParseException("从url:'{0}'中解析分类number失败，exp pattern:'{1}'", url, pattern);
+                throw new ParseException("从url:'{0}'中解析分类number失败，exp pattern:'{1}'", url, PATTERN);
 
             return number;
         }

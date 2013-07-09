@@ -100,23 +100,17 @@ namespace Business {
         }
 
         public void UpdateProductsUpdateTime(string id, DateTime productsUpdateTime) {
-            DatabaseFactory.CreateMongoDatabase()
-                .GetCollection<Category>("categories")
-                .Update(Query<Category>.EQ(c => c.Id, id),
+            Collection.Update(Query<Category>.EQ(c => c.Id, id),
                     Update<Category>.Set(c => c.ProductsUpdateTime, productsUpdateTime));
         }
 
         public void ResetStableTimes(string id) {
-            DatabaseFactory.CreateMongoDatabase()
-                .GetCollection<Category>("categories")
-                .Update(Query<Category>.EQ(c => c.Id, id),
+            Collection.Update(Query<Category>.EQ(c => c.Id, id),
                     Update<Category>.Set(c => c.StableTimes, 0));
         }
 
         public void IncreaseStableTimes(string id, int maxStableTimes = 24) {
-            DatabaseFactory.CreateMongoDatabase()
-                .GetCollection<Category>("categories")
-                .Update(Query.And(
+            Collection.Update(Query.And(
                     Query<Category>.EQ(c => c.Id, id),
                     Query<Category>.LT(c => c.StableTimes, maxStableTimes)),
                     Update<Category>.Inc(c => c.StableTimes, 1));

@@ -21,11 +21,11 @@ namespace Bee.Yhd {
 
             Logger.Info("开始抓取一号店数据");
 
-            var extractCategoriesTask = YhdDataSource.ExtractCategories();
+            var extractCategoriesTask = new YhdCategoryExtractor().Extract();
             extractCategoriesTask.Wait();
             var downloadedCategories = extractCategoriesTask.Result.ToList();
             Logger.InfoFormat("下载到{0}个分类", downloadedCategories.Count);
-            
+            return;
             // 保存分类数据并返回需要继续处理的分类
             //var upsertCategoriesTask = ServerProxy.UpsertCategoriesAsync(downloadedCategories);
             //upsertCategoriesTask.Wait();
