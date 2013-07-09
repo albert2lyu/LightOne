@@ -20,9 +20,9 @@ namespace Business {
             return Collection.FindAll();
         }
 
-        public IEnumerable<Category> GetBySource(string source) {
-            return Collection.Find(Query<Category>.EQ(c => c.Source, source));
-        }
+        //public IEnumerable<Category> GetBySource(string source) {
+        //    return Collection.Find(Query<Category>.EQ(c => c.Source, source));
+        //}
 
         public Category Get(string id) {
             if (string.IsNullOrWhiteSpace(id))
@@ -30,7 +30,7 @@ namespace Business {
             return Collection.FindOne(Query<Category>.EQ(c => c.Id, id));
         }
 
-        private Category GetBySourceAndNumber(string source, string number) {
+        public Category GetBySourceAndNumber(string source, string number) {
             return Collection.FindOne(Query.And(Query<Category>.EQ(c => c.Source, source), Query<Category>.EQ(c => c.Number, number)));
         }
 
@@ -95,9 +95,9 @@ namespace Business {
             Collection.Save(category);
         }
 
-        public void DisableById(string categoryId) {
-            Collection.Update(Query<Category>.EQ(c => c.Id, categoryId), Update<Category>.Set(c => c.Enable, false));
-        }
+        //public void DisableById(string categoryId) {
+        //    Collection.Update(Query<Category>.EQ(c => c.Id, categoryId), Update<Category>.Set(c => c.Enable, false));
+        //}
 
         public void UpdateProductsUpdateTime(string id, DateTime productsUpdateTime) {
             Collection.Update(Query<Category>.EQ(c => c.Id, id),
