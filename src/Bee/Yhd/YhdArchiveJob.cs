@@ -13,6 +13,7 @@ namespace Bee.Yhd {
     [DisallowConcurrentExecution]
     class YhdArchiveJob : IJob {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly CategoryArchiveService _CategoryArchiveService = new CategoryArchiveService();
 
         public void Execute(IJobExecutionContext context) {
             var stopwatch = new Stopwatch();
@@ -29,7 +30,7 @@ namespace Bee.Yhd {
             //var upsertCategoriesTask = ServerProxy.UpsertCategoriesAsync(downloadedCategories);
             //upsertCategoriesTask.Wait();
             //var needProcessCategories = upsertCategoriesTask.Result;
-            var needProcessCategories = Category.Upsert(downloadedCategories).ToList();
+            var needProcessCategories = _CategoryArchiveService.Upsert(downloadedCategories).ToList();
             Logger.InfoFormat("需要处理{0}个分类", needProcessCategories.Count);
 
             var taskLock = new SemaphoreSlim(initialCount: 4);

@@ -51,72 +51,19 @@ namespace Business
                 .FindOne(Query.And(Query<Category>.EQ(c => c.Source, source), Query<Category>.EQ(c => c.Number, number)));
         }
 
-        private bool NeedReExtract() {
+        public bool NeedReExtract() {
             return Level == 3
                 && ProductsUpdateTime + TimeSpan.FromHours(StableTimes) < DateTime.Now;
                 //&& GetAncestorCategories(Id).All(c => c.Number != "123" && c.Number != "25228");
         }
 
-        private void Save() {
-            DatabaseFactory.CreateMongoDatabase()
-                .GetCollection<Category>("categories")
-                .Save(this);
-        }
+        
 
-        private static IEnumerable<Category> GetBySource(string source) {
-            return DatabaseFactory.CreateMongoDatabase()
-                .GetCollection<Category>("categories")
-                .Find(Query<Category>.EQ(c => c.Source, source));
-        }
+        
 
-        private static void DisableById(string categoryId) {
-            DatabaseFactory.CreateMongoDatabase()
-                .GetCollection<Category>("categories")
-                .Update(Query<Category>.EQ(c => c.Id, categoryId), Update<Category>.Set(c => c.Enable, false));
-        }
+        
 
-        /// <summary>
-        /// 保存分类信息，返回需要抓取数据的分类
-        /// </summary>
-        /// <param name="categories"></param>
-        public static IEnumerable<Category> Upsert(IEnumerable<Category> categories) {
-            var cat = categories.FirstOrDefault();
-            if (cat == null)
-                yield break;
-
-            var existsCategories = GetBySource(cat.Source).ToList();
-
-            foreach (var category in categories) {
-                var existsCategory = existsCategories.FirstOrDefault(ec => ec.Source == category.Source && ec.Number == category.Number);
-
-                if (existsCategory == null) {
-                    // 新分类
-                    category.CreateTime = DateTime.Now;
-                    category.UpdateTime = DateTime.Now;
-                    category.ProductsUpdateTime = DateTime.Now;
-                }
-                else {
-                    // 已经存在的分类
-                    category.Id = existsCategory.Id;
-                    category.CreateTime = existsCategory.CreateTime;
-                    category.StableTimes = existsCategory.StableTimes;
-                    category.UpdateTime = DateTime.Now;
-                    category.ProductsUpdateTime = existsCategory.ProductsUpdateTime;
-                }
-                category.Save();
-
-                if (existsCategory != null && !existsCategory.NeedReExtract())
-                    continue;
-                // 返回需要抓取数据的分类
-                yield return category;
-            }
-
-            // 禁用已经不存在的分类
-            var notExistsCategories = existsCategories.Except(categories, new CategoryEqualityComparer());
-            foreach (var category in notExistsCategories) {
-                DisableById(category.Id);
-            }
-        }
+        
 
         public static Category Get(string id) {
             if (string.IsNullOrWhiteSpace(id))
