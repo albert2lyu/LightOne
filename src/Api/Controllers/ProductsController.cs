@@ -10,7 +10,8 @@ namespace Api.Controllers
     public class ProductsController : Controller
     {
         public ActionResult GetSignaturesByCategoryId(string categoryId) {
-            var products = Product.GetByCategoryId(categoryId);
+            var productRepo = new ProductRepo();
+            var products = productRepo.GetByCategoryId(categoryId);
             var signatures = products.Select(p => new ProductSignature { Source = p.Source, Number = p.Number, Signature = p.Signature });
             return new Api.Models.JsonResult(signatures);
         }

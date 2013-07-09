@@ -74,13 +74,11 @@
   <ItemGroup>
     <Compile Include="ServerProxy.cs" />
     <Compile Include="ParseException.cs" />
-    <Compile Include="ProductComparer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProxyHelper.cs" />
     <Compile Include="Yhd\YhdArchiveJob.cs" />
     <Compile Include="Yhd\YhdCategoryExtractor.cs" />
-    <Compile Include="Yhd\YhdDataSource.cs" />
     <Compile Include="Yhd\YhdProductExtractor.cs" />
   </ItemGroup>
   <ItemGroup>

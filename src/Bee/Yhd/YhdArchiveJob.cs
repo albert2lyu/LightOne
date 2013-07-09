@@ -14,6 +14,7 @@ namespace Bee.Yhd {
     class YhdArchiveJob : IJob {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly CategoryArchiveService _CategoryArchiveService = new CategoryArchiveService();
+        private readonly ProductRepo _ProductRepo = new ProductRepo();
 
         public void Execute(IJobExecutionContext context) {
             var stopwatch = new Stopwatch();
@@ -50,21 +51,17 @@ namespace Bee.Yhd {
         }
 
         private async Task<dynamic> ProcessCategoryAsync(Category category) {
-            // 获取服务器上的产品信息签名
-            //var productSignatures = await ServerProxy.GetProductSignaturesByCategoryIdAsync(category.Id);
-            var products = Product.GetByCategoryId(category.Id);
-            var productSignatures = products.Select(p => new ProductSignature { Source = p.Source, Number = p.Number, Signature = p.Signature });
-
-            // 从网站上抓取产品信息
-            var downloadTask = await YhdDataSource.ExtractProductsInCategoryAsync(category.Number);
-            // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
-            var downloadProducts = downloadTask.Distinct(new ProductComparer());
+            // 从网站上抓取产品信息，因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
+            var downloadProducts = await new YhdProductExtractor().ExtractProductsInCategoryAsync(category.Number);
+            // 获取已经存在产品的信息签名
+            var existingProducts = _ProductRepo.GetByCategoryId(category.Id)
+                .Select(p => new ProductSignature { Source = p.Source, Number = p.Number, Signature = p.Signature });
 
             // 计算刚下载的产品的签名
             downloadProducts.AsParallel().ForAll(p => p.Signature = ProductSignature.ComputeSignature(p));
 
             // 找到签名发生变化的产品
-            var changedProducts = FindChangedProducts(downloadProducts, productSignatures).ToList();
+            var changedProducts = FindChangedProducts(downloadProducts, existingProducts).ToList();
 
             //await ServerProxy.UpsertProductsAsync(category.Id, changedProducts);
             new CategoryProducts { CategoryId = category.Id, Products = changedProducts }.Upsert();

@@ -12,7 +12,7 @@ namespace Api.Controllers
 
         [HttpPost]
         public ActionResult Upsert(IEnumerable<Category> categories) {
-            var needProcessCategories = _CategoryArchiveService.Upsert(categories);
+            var needProcessCategories = _CategoryArchiveService.Archive(categories);
             return new Api.Models.JsonResult(needProcessCategories);
         }
     }

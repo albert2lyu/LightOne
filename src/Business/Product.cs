@@ -168,12 +168,6 @@ namespace Business {
             return GetBySourceAndNumber(source, number);
         }
 
-        public static IEnumerable<Product> GetByCategoryId(string categoryId) {
-            if (string.IsNullOrWhiteSpace(categoryId))
-                return new Product[0];
-
-            return DatabaseFactory.CreateMongoDatabase().GetCollection<Product>("products")
-                .Find(Query<Product>.EQ(p => p.CategoryIds, categoryId));
-        }
+        
     }
 }

@@ -15,11 +15,11 @@ namespace Bee {
         private static void MyTest() {
             var sw = new Stopwatch();
             sw.Start();
-            var task = YhdDataSource.ExtractProductsInCategoryAsync("28441");
+            var task = new YhdProductExtractor().ExtractProductsInCategoryAsync("28441");
             task.Wait();
 
             var products = task.Result
-                                .Distinct(new ProductComparer())   // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
+                                //.Distinct(new ProductComparer())   // 因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
                                 .ToList();
             
             Console.WriteLine(products.Count);
