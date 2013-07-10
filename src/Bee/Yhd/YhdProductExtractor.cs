@@ -51,7 +51,7 @@ namespace Bee.Yhd {
 
         private async Task<string> DownloadProductListHtmlAsync(string url) {
             var cookieContainer = new CookieContainer();
-            cookieContainer.Add(new Cookie("provinceId", "2")); // 北京站
+            cookieContainer.Add(new Cookie("provinceId", "2", "/", "www.yihaodian.com")); // 北京站
 
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate, CookieContainer = cookieContainer })) {
                 var responseContent = await client.GetStringAsync(url);

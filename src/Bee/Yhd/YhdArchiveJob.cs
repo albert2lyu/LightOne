@@ -14,6 +14,7 @@ namespace Bee.Yhd {
     class YhdArchiveJob : IJob {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly CategoryArchiveService _CategoryArchiveService = new CategoryArchiveService();
+        private readonly ProductArchiveService _ProductArchiveService = new ProductArchiveService();
         private readonly ProductRepo _ProductRepo = new ProductRepo();
 
         public void Execute(IJobExecutionContext context) {
@@ -25,7 +26,7 @@ namespace Bee.Yhd {
             var downloadedCategories = new YhdCategoryExtractor().Extract().Result;
             var needProcessCategories = _CategoryArchiveService.Archive(downloadedCategories).OrderBy(c => c.ProductsUpdateTime);
             
-            var taskLock = new SemaphoreSlim(initialCount: 4);
+            var taskLock = new SemaphoreSlim(initialCount: 1);
             var tasks = needProcessCategories.Select(async (category, index) => {
                 await taskLock.WaitAsync();
                 try {
@@ -64,7 +65,7 @@ namespace Bee.Yhd {
             var changedProducts = FindChangedProducts(downloadProducts, existingProducts).ToList();
 
             //await ServerProxy.UpsertProductsAsync(category.Id, changedProducts);
-            new CategoryProducts { CategoryId = category.Id, Products = changedProducts }.Upsert();
+            _ProductArchiveService.Archive(category.Id, changedProducts);
 
             return new {
                 Total = downloadProducts.Count(),
