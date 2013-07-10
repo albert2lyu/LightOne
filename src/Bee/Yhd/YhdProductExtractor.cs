@@ -24,20 +24,16 @@ namespace Bee.Yhd {
             //Logger.DebugFormat("抓取分类{0}...", categoryNumber);
             var pages = await GetTotalPageAsync(categoryNumber);
 
-            var results = new ConcurrentBag<Product>(); // 因为使用多线程填充，所以使用线程安全的集合类
-
-            await Task.WhenAll(Enumerable.Range(1, pages).Select(async page => {
+            var products = await Task.WhenAll(Enumerable.Range(1, pages).Select(async page => {
                 var doc = await DownloadProductListDocumentAsync(categoryNumber, page);
-                if (doc != null) {
-                    var products = ParseProductsFromHtmlDocument(doc);
-                    foreach (var product in products)
-                        results.Add(product);
-                        //yield return product;
-                }
+                if (doc != null)
+                    return ParseProductsFromHtmlDocument(doc);
+                else
+                    return new Product[0];
             }));
 
             //Logger.DebugFormat("抓取分类{0}完成", categoryNumber);
-            return results;
+            return products.SelectMany(p => p);
         }
 
         private async Task<int> GetTotalPageAsync(string categoryNumber) {

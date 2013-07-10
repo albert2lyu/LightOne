@@ -26,7 +26,7 @@ namespace Bee.Yhd {
             var downloadedCategories = new YhdCategoryExtractor().Extract().Result;
             var needProcessCategories = _CategoryArchiveService.Archive(downloadedCategories).OrderBy(c => c.ProductsUpdateTime);
             
-            var taskLock = new SemaphoreSlim(initialCount: 1);
+            var taskLock = new SemaphoreSlim(initialCount: 2);
             var tasks = needProcessCategories.Select(async (category, index) => {
                 await taskLock.WaitAsync();
                 try {
