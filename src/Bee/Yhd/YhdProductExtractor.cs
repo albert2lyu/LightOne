@@ -14,6 +14,7 @@ using System.Web;
 using Business;
 using System.Threading;
 using System.Diagnostics;
+using System.Net.Http;
 
 namespace Bee.Yhd {
     class YhdProductExtractor {
@@ -49,23 +50,21 @@ namespace Bee.Yhd {
         }
 
         private async Task<string> DownloadProductListHtmlAsync(string url) {
-            //Logger.Debug("start " + url.GetHashCode());
-            using (var webClient = new WebClient()) {
-                webClient.Headers.Add(HttpRequestHeader.Cookie, "provinceId=2");    // 北京站
-                //webClient.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip, deflate");
-                webClient.Encoding = Encoding.UTF8;
-                var responseContent = await webClient.DownloadStringTaskAsync(url);
+            var cookieContainer = new CookieContainer();
+            cookieContainer.Add(new Cookie("provinceId", "2")); // 北京站
+
+            using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate, CookieContainer = cookieContainer })) {
+                var responseContent = await client.GetStringAsync(url);
 
                 var html = JsonConvert.DeserializeAnonymousType(responseContent, new { value = string.Empty }).value;
                 if (string.IsNullOrWhiteSpace(html))
                     throw new ParseException("无法反序列化Json响应内容，缺少value属性？");
 
-                //Logger.Debug("done  " + url.GetHashCode());
                 return html;
             }
         }
 
-        private async Task<HtmlDocument> DownloadProductListDocumentAsync(string categoryNumber, int page, int retryTimes = 0) {
+        private async Task<HtmlDocument> DownloadProductListDocumentAsync(string categoryNumber, int page) {
             try {
                 var defaultHtml = await DownloadProductListHtmlAsync(string.Format(@"http://www.yihaodian.com/ctg/searchPage/c{0}-/b0/a-s1-v0-p{1}-price-d0-f04-m1-rt0-pid-k/", categoryNumber, page));
                 // 产品列表具有延迟加载功能，所以需要抓取两次才能获取到完整一页的内容
@@ -111,10 +110,9 @@ namespace Bee.Yhd {
                 var url = "http://busystock.i.yihaodian.com/busystock/restful/truestock?mcsite=1&provinceId=2&" +
                     string.Join("&", productsInBatch.Select(p => string.Format("pmIds={0}", p.Number)));
 
-                using (var webClient = new WebClient()) {
+                using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate })) {
                     try {
-                        webClient.Encoding = Encoding.UTF8;
-                        var json = await webClient.DownloadStringTaskAsync(url);    // 这里出现异常
+                        var json = await client.GetStringAsync(url);    // 这里出现异常
 
                         var productsPrices = JsonConvert.DeserializeAnonymousType(json, new[] {
                             new {
