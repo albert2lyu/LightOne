@@ -10,12 +10,17 @@ using System.Text;
 namespace Business {
     public class DataUploadingService {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly string _Mongodump;
+
+        public DataUploadingService(string mongodump) {
+            if (string.IsNullOrWhiteSpace(mongodump))
+                throw new ArgumentException("mongodump.exe路径不能为空");
+            _Mongodump = mongodump;
+        }
 
         public void Run() {
-            var mongodump = @"D:\software\mongodb-win32-x86_64-2.4.5\bin\mongodump.exe";
-            
             foreach (var command in BuildCommands()) {
-                var info = new ProcessStartInfo(mongodump, command);
+                var info = new ProcessStartInfo(_Mongodump, command);
                 info.UseShellExecute = false;
                 info.RedirectStandardOutput = true;
 
