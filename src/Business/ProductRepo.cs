@@ -14,6 +14,7 @@ namespace Business {
             Collection = DatabaseFactory.CreateMongoDatabase().GetCollection<Product>("products");
 
             Collection.EnsureIndex(IndexKeys.Ascending("CategoryIds"));
+            Collection.EnsureIndex(IndexKeys.Ascending("UpdateTime"));
             //Collection.EnsureIndex(IndexKeys.Ascending("Source", "Number"), IndexOptions.SetUnique(true));
         }
 

@@ -30,7 +30,7 @@ namespace Bee {
         public static void Main() {
             //MyTest();
             //return;
-
+            Console.WriteLine();
             Logger.Info("启动");
 
             //new YhdArchiveJob().Execute(null);
