@@ -19,7 +19,7 @@ namespace Business {
         }
 
         public void Run() {
-            foreach (var command in BuildCommands()) {
+            foreach (var command in BuildMongodumpCommands()) {
                 var info = new ProcessStartInfo(_Mongodump, command);
                 info.UseShellExecute = false;
                 info.RedirectStandardOutput = true;
@@ -29,13 +29,15 @@ namespace Business {
                 var output = process.StandardOutput.ReadToEnd();
                 Logger.Debug(output);
             }
+
+            //7z a -tzip dump.zip .\upload\*
         }
 
-        private IEnumerable<string> BuildCommands() {
+        private IEnumerable<string> BuildMongodumpCommands() {
             var db = "queen";
             var output = Path.Combine(Environment.CurrentDirectory, "upload");
 
-            var hoursAgo = 1;
+            var hoursAgo = 10;
             var epoch = new DateTime(1970, 1, 1).ToLocalTime();
             var startTime = (long)(DateTime.Now.AddHours(-hoursAgo) - epoch).TotalMilliseconds;
             yield return string.Format("-db {0} -c products -o {1} -q \"{{UpdateTime: {{$gte: new Date({2})}}}}\"", db, output, startTime);
