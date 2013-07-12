@@ -20,9 +20,9 @@ namespace Daemon.DataUploading {
 
         public void Run(string database) {
             var dumpFolder = Path.Combine(Environment.CurrentDirectory, "upload");
-            _DatabaseDumpService.DumpDatabase(database, dumpFolder, TimeSpan.FromHours(3));
+            _DatabaseDumpService.DumpDatabase(database, dumpFolder, TimeSpan.FromHours(1));
 
-            var compressedFilename = string.Format("{0}-dump.7z", database);
+            var compressedFilename = Path.Combine(dumpFolder, string.Format("{0}-dump.7z", database));
             _CompressionService.Compress(dumpFolder, compressedFilename);
         }
 

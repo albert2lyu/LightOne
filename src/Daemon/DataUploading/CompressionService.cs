@@ -18,7 +18,7 @@ namespace Daemon.DataUploading {
         }
 
         public void Compress(string inputPath, string outputFilename) {
-            var command = string.Format("a {0} {1}", outputFilename, inputPath);
+            var command = string.Format("a {0} {1}\\*", outputFilename, inputPath);
             var info = new ProcessStartInfo(_7zFilename, command);
             info.UseShellExecute = false;
             info.RedirectStandardOutput = true;
