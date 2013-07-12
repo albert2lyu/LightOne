@@ -13,17 +13,17 @@ namespace Daemon.DataUploading {
         private readonly DatabaseDumpService _DatabaseDumpService;
         private readonly CompressionService _CompressionService;
 
-        public DataUploadingService(string mongodumpFilename) {
-            _DatabaseDumpService = new DatabaseDumpService(mongodumpFilename);
+        public DataUploadingService() {
+            _DatabaseDumpService = new DatabaseDumpService();
             _CompressionService = new CompressionService();
         }
 
         public void Run(string database) {
-            var dumpFolder = Path.Combine(Environment.CurrentDirectory, "upload");
-            _DatabaseDumpService.DumpDatabase(database, dumpFolder, TimeSpan.FromHours(1));
+            var tmpFolder = Path.Combine(Environment.CurrentDirectory, "tmp");
+            _DatabaseDumpService.DumpDatabase(database, tmpFolder, TimeSpan.FromHours(1));
 
-            var compressedFilename = Path.Combine(dumpFolder, string.Format("{0}-dump.7z", database));
-            _CompressionService.Compress(dumpFolder, compressedFilename);
+            var compressedFilename = Path.Combine(tmpFolder, string.Format("{0}-dump.7z", database));
+            _CompressionService.Compress(Path.Combine(tmpFolder, database), compressedFilename);
         }
 
         

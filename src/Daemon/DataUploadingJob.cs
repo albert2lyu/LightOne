@@ -26,7 +26,7 @@ namespace Daemon {
 
             //var service = new DataUploadingService(ConfigurationManager.AppSettings["mongodump"], ConfigurationManager.AppSettings["7z"]);
 
-            var service = new DataUploadingService(ConfigurationManager.AppSettings["mongodump"]);
+            var service = new DataUploadingService();
             service.Run("queen");
 
             Logger.InfoFormat("数据上传作业完成，用时{0}", sw.Elapsed);

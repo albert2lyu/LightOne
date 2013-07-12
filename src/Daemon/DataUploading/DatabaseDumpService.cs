@@ -10,18 +10,13 @@ using System.Text;
 namespace Daemon.DataUploading {
     class DatabaseDumpService {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly string _MongodumpFilename;
-
-        public DatabaseDumpService(string mongodumpFilename) {
-            if (string.IsNullOrWhiteSpace(mongodumpFilename))
-                throw new ArgumentException("mongodump.exe路径不能为空");
-            _MongodumpFilename = mongodumpFilename;
-        }
 
         public void DumpDatabase(string database, string outputFolder, TimeSpan timeAgo) {
+            var filename = Path.Combine(Environment.CurrentDirectory, "Lib", "mongodump.exe");
+
             foreach (var arg in BuildMongodumpArguments(timeAgo)) {
                 var command = string.Format("-db {0} -o {1} {2}", database, outputFolder, arg);
-                var info = new ProcessStartInfo(_MongodumpFilename, command);
+                var info = new ProcessStartInfo(filename, command);
                 info.UseShellExecute = false;
                 info.RedirectStandardOutput = true;
 
