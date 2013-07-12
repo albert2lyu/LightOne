@@ -55,7 +55,6 @@
   <ItemGroup>
     <Compile Include="ArrayUtil.cs" />
     <Compile Include="CategoryArchiveService.cs" />
-    <Compile Include="DataUploadingService.cs" />
     <Compile Include="ProductArchiveService.cs" />
     <Compile Include="CategoryRepo.cs" />
     <Compile Include="ParseException.cs" />

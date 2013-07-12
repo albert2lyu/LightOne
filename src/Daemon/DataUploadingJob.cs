@@ -1,5 +1,6 @@
 ﻿using Business;
 using Common.Logging;
+using Daemon.DataUploading;
 using Quartz;
 using System;
 using System.Collections.Generic;
@@ -22,8 +23,8 @@ namespace Daemon {
             sw.Start();
             Logger.Info("数据上传作业启动");
 
-            var service = new DataUploadingService(ConfigurationManager.AppSettings["mongodump"]);
-            service.Run();
+            var service = new DataUploadingService(ConfigurationManager.AppSettings["mongodump"], ConfigurationManager.AppSettings["7z"]);
+            service.Run("queen");
 
             Logger.InfoFormat("数据上传作业完成，用时{0}", sw.Elapsed);
         }
