@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -9,24 +10,20 @@ using System.Text;
 namespace Daemon.DataUploading {
     class CompressionService {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly string _7zFilename;
-
-        public CompressionService(string zFilename) {
-            if (string.IsNullOrWhiteSpace(zFilename))
-                throw new ArgumentException("7z.exe路径不能为空");
-            _7zFilename = zFilename;
-        }
 
         public void Compress(string inputPath, string outputFilename) {
+            var filename = Path.Combine(Environment.CurrentDirectory, "Lib", "7z.exe");
             var command = string.Format("a {0} {1}\\*", outputFilename, inputPath);
-            var info = new ProcessStartInfo(_7zFilename, command);
+            var info = new ProcessStartInfo(filename, command);
             info.UseShellExecute = false;
             info.RedirectStandardOutput = true;
 
             var process = Process.Start(info);
 
-            var output = process.StandardOutput.ReadToEnd();
-            Logger.Debug(output);
+            var reader = process.StandardOutput;
+            while (!reader.EndOfStream) {
+                Logger.Debug(reader.ReadLine());
+            }
         }
     }
 }

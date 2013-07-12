@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -23,7 +24,9 @@ namespace Daemon {
             sw.Start();
             Logger.Info("数据上传作业启动");
 
-            var service = new DataUploadingService(ConfigurationManager.AppSettings["mongodump"], ConfigurationManager.AppSettings["7z"]);
+            //var service = new DataUploadingService(ConfigurationManager.AppSettings["mongodump"], ConfigurationManager.AppSettings["7z"]);
+
+            var service = new DataUploadingService(ConfigurationManager.AppSettings["mongodump"]);
             service.Run("queen");
 
             Logger.InfoFormat("数据上传作业完成，用时{0}", sw.Elapsed);

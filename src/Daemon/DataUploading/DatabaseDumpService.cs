@@ -27,8 +27,10 @@ namespace Daemon.DataUploading {
 
                 var process = Process.Start(info);
 
-                var output = process.StandardOutput.ReadToEnd();
-                Logger.Debug(output);
+                var reader = process.StandardOutput;
+                while (!reader.EndOfStream) {
+                    Logger.Debug(reader.ReadLine());
+                }
             }
         }
 

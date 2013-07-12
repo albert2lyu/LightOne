@@ -13,9 +13,9 @@ namespace Daemon.DataUploading {
         private readonly DatabaseDumpService _DatabaseDumpService;
         private readonly CompressionService _CompressionService;
 
-        public DataUploadingService(string mongodumpFilename, string zFilename) {
+        public DataUploadingService(string mongodumpFilename) {
             _DatabaseDumpService = new DatabaseDumpService(mongodumpFilename);
-            _CompressionService = new CompressionService(zFilename);
+            _CompressionService = new CompressionService();
         }
 
         public void Run(string database) {
