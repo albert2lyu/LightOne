@@ -24,8 +24,6 @@ namespace Daemon {
             sw.Start();
             Logger.Info("数据上传作业启动");
 
-            //var service = new DataUploadingService(ConfigurationManager.AppSettings["mongodump"], ConfigurationManager.AppSettings["7z"]);
-
             var service = new DataUploadingService();
             service.Run("queen");
 

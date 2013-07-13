@@ -14,9 +14,6 @@ namespace Daemon {
         static void Main(string[] args) {
             Logger.Info("Daemon启动");
 
-            new DataUploadingJob().Execute(null);
-            return;
-
             var schedulerFactory = new StdSchedulerFactory();
             var scheduler = schedulerFactory.GetScheduler();
             scheduler.Start();

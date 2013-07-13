@@ -8,21 +8,24 @@ using System.Reflection;
 using System.Text;
 
 namespace Daemon.DataUploading {
-    class CompressionService {
+    class ProcessRunner {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public void Compress(string inputPath, string outputFilename) {
-            var filename = Path.Combine(Environment.CurrentDirectory, "Lib", "7z.exe");
-            var command = string.Format("a {0} {1}\\*", outputFilename, inputPath);
+        public void Run(string filename, string command) {
             var info = new ProcessStartInfo(filename, command);
             info.UseShellExecute = false;
             info.RedirectStandardOutput = true;
+            info.RedirectStandardError = true;
 
             var process = Process.Start(info);
 
-            var reader = process.StandardOutput;
+            WriteLog(process.StandardOutput, Logger.Debug);
+            WriteLog(process.StandardError, Logger.Error);
+        }
+
+        private void WriteLog(StreamReader reader, Action<string> logAction) {
             while (!reader.EndOfStream) {
-                Logger.Debug(reader.ReadLine());
+                logAction.Invoke(reader.ReadLine());
             }
         }
     }
