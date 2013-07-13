@@ -15,7 +15,7 @@ namespace Business {
 
             Collection.EnsureIndex(IndexKeys.Ascending("CategoryIds"));
             Collection.EnsureIndex(IndexKeys.Ascending("UpdateTime"));
-            //Collection.EnsureIndex(IndexKeys.Ascending("Source", "Number"), IndexOptions.SetUnique(true));
+            Collection.EnsureIndex(IndexKeys.Ascending("Source", "Number"), IndexOptions.SetUnique(true));
         }
 
         public IEnumerable<Product> GetByCategoryId(string categoryId) {
@@ -23,6 +23,13 @@ namespace Business {
                 return new Product[0];
 
             return Collection.Find(Query<Product>.EQ(p => p.CategoryIds, categoryId));
+        }
+
+        public Product GetBySourceAndNumber(string source, string number) {
+            return Collection.FindOne(Query.And(
+                Query<Product>.EQ(p => p.Source, source),
+                Query<Product>.EQ(p => p.Number, number))
+            );
         }
     }
 }

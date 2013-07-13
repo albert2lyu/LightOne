@@ -11,22 +11,26 @@ using System.Text;
 namespace Daemon.DataUploading {
     public class DataUploadingService {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly DatabaseDump _DatabaseDumpService;
+        private readonly DatabaseExport _DatabaseExport;
         private readonly Compression _CompressionService;
         private readonly FileTransfer _FileTransferService;
 
         public DataUploadingService() {
-            _DatabaseDumpService = new DatabaseDump();
+            _DatabaseExport = new DatabaseExport();
             _CompressionService = new Compression();
             _FileTransferService = new FileTransfer();
         }
 
         public void Run(string database) {
             var tmpFolder = Path.Combine(Environment.CurrentDirectory, "tmp");
-            _DatabaseDumpService.DumpDatabase(database, tmpFolder, TimeSpan.FromMinutes(35));
+
+            var exportFolder = Path.Combine(tmpFolder, database);
+            if (!Directory.Exists(exportFolder))
+                Directory.CreateDirectory(exportFolder);
+            _DatabaseExport.ExportDatabase(database, exportFolder, TimeSpan.FromMinutes(35));
 
             var compressedFilename = Path.Combine(tmpFolder, string.Format("{0}-dump-{1:MMddHHmm}.7z", database, DateTime.Now));
-            _CompressionService.Compress(Path.Combine(tmpFolder, database), compressedFilename);
+            _CompressionService.Compress(exportFolder, compressedFilename);
 
             var remotePath = ConfigurationManager.AppSettings["uploadRemotePath"];
             var password = ConfigurationManager.AppSettings["uploadPassword"];

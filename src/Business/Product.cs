@@ -40,15 +40,7 @@ namespace Business {
 
         public Signature Signature { get; set; }
 
-        public static Product GetBySourceAndNumber(string source, string number) {
-            return DatabaseFactory.CreateMongoDatabase()
-                .GetCollection<Product>("products")
-                .FindOne(Query.And(
-                Query<Product>.EQ(p => p.Source, source),
-                Query<Product>.EQ(p => p.Number, number))
-                );
-        }
-
+        
         private static decimal CaclChangedRatio(decimal oldPrice, decimal newPrice) {
             if (oldPrice == 0)
                 return 0;
@@ -64,7 +56,8 @@ namespace Business {
             //    return false;
 
             // 获取已经存在的产品
-            var existsProduct = GetBySourceAndNumber(Source, Number);
+            var productRepo = new ProductRepo();
+            var existsProduct = productRepo.GetBySourceAndNumber(Source, Number);
 
             if (existsProduct != null) {
                 Id = existsProduct.Id;
@@ -165,7 +158,8 @@ namespace Business {
             if (m.Success)
                 number = m.Groups[1].Value;
 
-            return GetBySourceAndNumber(source, number);
+            var productRepo = new ProductRepo();
+            return productRepo.GetBySourceAndNumber(source, number);
         }
 
         

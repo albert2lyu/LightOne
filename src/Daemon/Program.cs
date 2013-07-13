@@ -23,7 +23,7 @@ namespace Daemon {
         }
 
         private static void ScheduleRatioRankingJob(IScheduler scheduler) {
-            const int INTERVAL_IN_MINUTES = 5;
+            const int INTERVAL_IN_MINUTES = 15;
             scheduler.ScheduleJob(
                 JobBuilder.Create<RatioRankingJob>().WithIdentity("RatioRankingJob").Build(),
                 TriggerBuilder.Create().WithIdentity("RatioRankingTrigger").StartNow().WithSimpleSchedule(x => x.RepeatForever().WithIntervalInMinutes(INTERVAL_IN_MINUTES)).Build());
