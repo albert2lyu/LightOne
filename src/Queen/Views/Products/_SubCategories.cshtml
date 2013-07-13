@@ -1,6 +1,7 @@
 ﻿@model string
 @{
-    var categoryTree = Category.GetCategoryTree(Model).ToList();
+    var repo = new CategoryRepo();
+    var categoryTree = repo.GetCategoryTree(Model).ToList();
     if (categoryTree.Count > 0) {
     <ul class="nav nav-list">
         @foreach (var branch in categoryTree) {

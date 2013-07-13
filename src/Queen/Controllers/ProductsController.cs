@@ -19,7 +19,7 @@ namespace Queen.Controllers
             var ratioRankingRepo = new RatioRankingRepo();
             var ranking = ratioRankingRepo.GetByCategoryId(categoryId);
             if (ranking != null) {
-                products = ranking.ProductIds.Select(id => Product.GetById(id));
+                products = ranking.ProductIds.Select(id => Product.GetById(id)).Where(p => p != null);
             }
             //var products = Product.GetByPriceReduced(categoryId, 150, 24);
 
