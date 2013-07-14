@@ -8,12 +8,10 @@ using System.Text;
 
 namespace Business {
     public class CategoryRepo {
-        private static readonly MongoCollection<Category> Collection;
+        public static readonly MongoCollection<Category> Collection;
 
         static CategoryRepo() {
             Collection = DatabaseFactory.CreateMongoDatabase().GetCollection<Category>("categories");
-
-            Collection.EnsureIndex(IndexKeys.Ascending("Source", "Number"), IndexOptions.SetUnique(true));
         }
 
         public IEnumerable<Category> GetAll() {

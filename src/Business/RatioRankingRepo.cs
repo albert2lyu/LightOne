@@ -8,20 +8,26 @@ using System.Text;
 
 namespace Business {
     public class RatioRankingRepo {
-        private static readonly MongoCollection<RatioRanking> Collection;
+        public static readonly MongoCollection<RatioRanking> Collection;
 
         static RatioRankingRepo() {
             Collection = DatabaseFactory.CreateMongoDatabase().GetCollection<RatioRanking>("ratio_rankings");
-
-            Collection.EnsureIndex(IndexKeys.Ascending("CategoryId"), IndexOptions.SetUnique(true));
         }
 
         public RatioRanking GetByCategoryId(string categoryId) {
             return Collection.FindOne(Query<RatioRanking>.EQ(p => p.CategoryId, categoryId));
         }
 
-        public void Save(RatioRanking o) {
-            Collection.Save(o);
+        public void Upsert(string categoryId, string[] productIds) {
+            var ranking = GetByCategoryId(categoryId);
+            if (ranking == null) {
+                ranking = new RatioRanking();
+                ranking.CategoryId = categoryId;
+            }
+            ranking.ProductIds = productIds;
+            ranking.UpdateTime = DateTime.Now;
+
+            Collection.Save(ranking);
         }
     }
 }

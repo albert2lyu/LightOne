@@ -22,7 +22,7 @@ namespace Business {
 
         public string ImgUrl { get; set; }
 
-        public decimal Price { get; set; }
+        public double Price { get; set; }
 
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime CreateTime { get; set; }
@@ -32,16 +32,16 @@ namespace Business {
 
         public string[] CategoryIds { get; set; }
 
-        public decimal OldPrice { get; set; }
+        public double OldPrice { get; set; }
 
-        public decimal ChangedRatio { get; set; }
+        public double ChangedRatio { get; set; }
 
         public List<ProductPriceHistory> PriceHistory { get; set; }
 
         public Signature Signature { get; set; }
 
-        
-        private static decimal CaclChangedRatio(decimal oldPrice, decimal newPrice) {
+
+        private static double CaclChangedRatio(double oldPrice, double newPrice) {
             if (oldPrice == 0)
                 return 0;
             return (newPrice - oldPrice) / oldPrice;
@@ -92,23 +92,7 @@ namespace Business {
             return existsProduct == null || existsProduct.Price != Price;
         }
 
-        /// <summary>
-        /// 获取价格下调幅度最大的商品
-        /// </summary>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        public static IEnumerable<Product> GetByPriceReduced(string categoryId, int count, int hoursAgo) {
-            var query = Query.And(Query<Product>.LT(p => p.ChangedRatio, 0),
-                Query<Product>.GT(p => p.UpdateTime, DateTime.Now.AddHours(-hoursAgo)));
-            if (!string.IsNullOrWhiteSpace(categoryId))
-                query = Query.And(query, Query<Product>.EQ(p => p.CategoryIds, categoryId));
-
-            return DatabaseFactory.CreateMongoDatabase()
-                .GetCollection<Product>("products")
-                .Find(query)
-                .SetSortOrder(SortBy<Product>.Descending(p => p.ChangedRatio))  // 负数desc表示从小到大排序
-                .SetLimit(count);
-        }
+        
 
         public static Product GetById(string id) {
             return DatabaseFactory.CreateMongoDatabase()
@@ -116,16 +100,16 @@ namespace Business {
                 .FindOne(Query<Product>.EQ(p => p.Id, id));
         }
 
-        public decimal? GetPriceInDay(DateTime day) {
+        public double? GetPriceInDay(DateTime day) {
             var prices = GetPricesInDay(day);
             if (prices.Length > 0)
                 return prices[0];
             return null;
         }
 
-        public decimal[] GetPricesInDay(DateTime day) {
+        public double[] GetPricesInDay(DateTime day) {
             if (PriceHistory == null || PriceHistory.Count == 0)
-                return new decimal[0];
+                return new double[0];
 
             // 查找当日内发生变化的价格
             var start = day.Date;
@@ -141,9 +125,9 @@ namespace Business {
                 .LastOrDefault();
 
             if (newestPrice == null)
-                return new decimal[0];
+                return new double[0];
             else
-                return new decimal[] { newestPrice.Price };
+                return new double[] { newestPrice.Price };
         }
 
         public static Product ParseAndGetByUrl(string url) {

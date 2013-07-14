@@ -1,4 +1,6 @@
 ﻿using Common.Logging;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,32 +11,57 @@ using System.Text;
 namespace Business {
     public class RatioRankingService {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly CategoryRepo _CategoryRepo = new CategoryRepo();
         private readonly RatioRankingRepo _RatioRankingRepo = new RatioRankingRepo();
+        private readonly ProductRepo _ProductRepo = new ProductRepo();
 
         public void RankAllCategories() {
-            RankCategory(null);
-            foreach (var category in _CategoryRepo.GetAll())
-                RankCategory(category);
+            const int MAX_COUNT = 150;
+            const int HOURS_AGO = 10;
+            // 计算所有商品的折扣排行
+            var products = _ProductRepo.GetByPriceReduced(MAX_COUNT, HOURS_AGO);
+            _RatioRankingRepo.Upsert(null, products.Select(p => p.Id).ToArray());
+
+            RankProductCategories(MAX_COUNT, HOURS_AGO);
         }
 
-        private void RankCategory(Category category) {
-            var sw = new Stopwatch();
-            sw.Start();
+        private void RankProductCategories(int count, int hoursAgo) {
+            // 逐个分类计算太慢了，所以改为aggregation实现。
+            // ChangedRatio < 0 and UpdateTime > xxx order by ChangedRatio limit 150
+            var match = new BsonDocument {{ 
+                "$match", 
+                new BsonDocument {
+                    {"ChangedRatio", new BsonDocument {{"$lt", 0}}},
+                    {"UpdateTime", new BsonDocument {{"$gt", DateTime.Now.AddHours(-hoursAgo)}}}
+                }
+            }};
+            var sort = new BsonDocument {{ 
+                "$sort", 
+                new BsonDocument {{"ChangedRatio", 1}}
+            }};
+            var unwind = new BsonDocument { { "$unwind", "$CategoryIds" } };
+            var group = new BsonDocument {{"$group", new BsonDocument { 
+                                { "_id", "$CategoryIds"}, 
+                                {"products", new BsonDocument{{ "$push", "$_id" }}} 
+            }}};
+            //var project = new BsonDocument {{ 
+            //    "$project", 
+            //    new BsonDocument { 
+            //        {"_id", 0},
+            //        {"CategoryId", "$_id"}, 
+            //        {"ProductIds","$products"}
+            //    } 
+            //}};
 
-            var categoryId = category != null ? category.Id : null;
-            var products = Product.GetByPriceReduced(categoryId, 150, 24);
+            var pipeline = new[] { match, sort, unwind, group };
 
-            var ranking = _RatioRankingRepo.GetByCategoryId(categoryId);
-            if (ranking == null) {
-                ranking = new RatioRanking();
-                ranking.CategoryId = categoryId;
+            var result = ProductRepo.Collection.Aggregate(pipeline);
+
+            foreach (var doc in result.ResultDocuments) {
+                var categoryId = doc["_id"].AsString;
+                var productIds = doc["products"].AsBsonArray.Select(id => id.AsObjectId.ToString()).Take(count).ToArray();
+
+                _RatioRankingRepo.Upsert(categoryId, productIds);
             }
-            ranking.ProductIds = products.Select(p => p.Id).ToArray();
-            ranking.UpdateTime = DateTime.Now;
-
-            _RatioRankingRepo.Save(ranking);
-            Logger.DebugFormat("排序“{0}”价格，用时{1}", category != null ? category.Name : "[全部]", sw.Elapsed);
         }
     }
 }

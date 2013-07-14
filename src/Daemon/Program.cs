@@ -1,4 +1,5 @@
-﻿using Common.Logging;
+﻿using Business;
+using Common.Logging;
 using Quartz;
 using Quartz.Impl;
 using System;

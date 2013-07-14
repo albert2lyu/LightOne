@@ -113,7 +113,7 @@ namespace Bee.Yhd {
                         var productsPrices = JsonConvert.DeserializeAnonymousType(json, new[] {
                             new {
                                 pmId = string.Empty,
-                                productPrice = (decimal)0
+                                productPrice = (double)0
                             }
                         });
                         productsPrices.AsParallel()
@@ -275,14 +275,14 @@ namespace Bee.Yhd {
             return string.IsNullOrWhiteSpace(name) ? str : name;
         }
 
-        private decimal ParsePriceFromString(string str) {
+        private double ParsePriceFromString(string str) {
             // 尝试使用字符串操作解析，因为正则表达式耗性能
             if (string.IsNullOrWhiteSpace(str))
                 throw new ParseException("从字符串'{0}'中解析价格失败", str);
             var s = str.Trim(new []{' ', '¥'});
 
-            decimal price;
-            if (decimal.TryParse(s, out price))
+            double price;
+            if (double.TryParse(s, out price))
                 return price;
                 
             var pattern = @"\d+(.\d+)?";
@@ -295,7 +295,7 @@ namespace Bee.Yhd {
             if (string.IsNullOrWhiteSpace(val))
                 throw new ParseException("从字符串'{0}'中解析价格失败，exp pattern:'{1}'", str, pattern);
 
-            return decimal.Parse(val);
+            return double.Parse(val);
         }
     }
 }

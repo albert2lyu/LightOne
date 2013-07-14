@@ -61,9 +61,9 @@
             var hasOne = false;
             foreach (var item in Model) {
                 hasOne = true;
-                var offRatio = (1 + item.ChangedRatio) * 10;
-                var offRatioMajor = decimal.Truncate(offRatio);
-                var offRatioMinor = offRatio - offRatioMajor;
+                var discount = Math.Round(item.Price * 10 / item.OldPrice, 1);
+                var offRatioMajor = (int)discount;
+                var offRatioMinor = discount - offRatioMajor;
             <div class="product">
                 <a href="@Url.Action("Details", new {id = item.Id })" target="_blank" title="@item.Name">
                     <img data-original="@item.ImgUrl" src="@placeholderImg"/>

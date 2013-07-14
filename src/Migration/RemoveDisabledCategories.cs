@@ -11,7 +11,6 @@ namespace Migration {
         public void Run() {
             var categoriesCollection = DatabaseFactory.CreateMongoDatabase().GetCollection<Category>("categories");
             var productsCollection = DatabaseFactory.CreateMongoDatabase().GetCollection<Product>("products");
-            productsCollection.EnsureIndex("CategoryIds");
 
             foreach (var category in categoriesCollection.Find(Query<Category>.EQ(c => c.Enable, false))) {
                 Console.Write(category.Name);

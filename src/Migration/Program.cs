@@ -20,7 +20,7 @@ namespace Migration {
                 return;
             }
             if (args[0] == "fixprice")
-                new FixPrice().Run(decimal.Parse(args[1]));
+                new FixPrice().Run(double.Parse(args[1]));
             else if (args[0] == "delcat")
                 new RemoveDisabledCategories().Run();
             else if (args[0] == "delp")

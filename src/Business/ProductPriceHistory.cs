@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Business {
     public class ProductPriceHistory {
-        public decimal Price { get; set; }
+        public double Price { get; set; }
 
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime Time { get; set; }
@@ -12,7 +12,7 @@ namespace Business {
         public ProductPriceHistory() {
         }
 
-        public ProductPriceHistory(decimal price, DateTime time) {
+        public ProductPriceHistory(double price, DateTime time) {
             Price = price;
             Time = time;
         }

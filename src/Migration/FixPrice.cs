@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Migration {
     class FixPrice {
-        public void Run(decimal ratio) {
+        public void Run(double ratio) {
             var count = 1;
 
             while (true) {
@@ -43,7 +43,7 @@ namespace Migration {
             }
         }
 
-        private static decimal CaclChangedRatio(decimal oldPrice, decimal newPrice) {
+        private static double CaclChangedRatio(double oldPrice, double newPrice) {
             if (oldPrice == 0)
                 return 0;
             return (newPrice - oldPrice) / oldPrice;

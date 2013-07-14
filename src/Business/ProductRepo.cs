@@ -8,14 +8,10 @@ using System.Text;
 
 namespace Business {
     public class ProductRepo {
-        private static readonly MongoCollection<Product> Collection;
+        public static readonly MongoCollection<Product> Collection;
 
         static ProductRepo() {
             Collection = DatabaseFactory.CreateMongoDatabase().GetCollection<Product>("products");
-
-            Collection.EnsureIndex(IndexKeys.Ascending("CategoryIds"));
-            Collection.EnsureIndex(IndexKeys.Ascending("UpdateTime"));
-            Collection.EnsureIndex(IndexKeys.Ascending("Source", "Number"), IndexOptions.SetUnique(true));
         }
 
         public IEnumerable<Product> GetByCategoryId(string categoryId) {
@@ -30,6 +26,20 @@ namespace Business {
                 Query<Product>.EQ(p => p.Source, source),
                 Query<Product>.EQ(p => p.Number, number))
             );
+        }
+
+        /// <summary>
+        /// 获取价格下调幅度最大的商品
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public IEnumerable<Product> GetByPriceReduced(int count, int hoursAgo) {
+            return Collection.Find(
+                    Query.And(
+                        Query<Product>.LT(p => p.ChangedRatio, 0),
+                        Query<Product>.GT(p => p.UpdateTime, DateTime.Now.AddHours(-hoursAgo))))
+                .SetSortOrder(SortBy<Product>.Ascending(p => p.ChangedRatio))
+                .SetLimit(count);
         }
     }
 }
