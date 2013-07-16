@@ -1,4 +1,4 @@
-﻿@model string
+﻿@model ObjectId
 @{
     var repo = new CategoryRepo();
     var categoryTree = repo.GetCategoryTree(Model).ToList();

@@ -9,8 +9,8 @@ using System.Text.RegularExpressions;
 
 namespace Business {
     public class Product {
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        //[BsonRepresentation(BsonType.ObjectId)]
+        public ObjectId Id { get; set; }
 
         public string Number { get; set; }
 
@@ -30,7 +30,7 @@ namespace Business {
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime UpdateTime { get; set; }
 
-        public string[] CategoryIds { get; set; }
+        public ObjectId[] CategoryIds { get; set; }
 
         public double OldPrice { get; set; }
 
@@ -94,7 +94,7 @@ namespace Business {
 
         
 
-        public static Product GetById(string id) {
+        public static Product GetById(ObjectId id) {
             return DatabaseFactory.CreateMongoDatabase()
                 .GetCollection<Product>("products")
                 .FindOne(Query<Product>.EQ(p => p.Id, id));

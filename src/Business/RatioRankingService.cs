@@ -19,7 +19,7 @@ namespace Business {
             const int HOURS_AGO = 10;
             // 计算所有商品的折扣排行
             var products = _ProductRepo.GetByPriceReduced(MAX_COUNT, HOURS_AGO);
-            _RatioRankingRepo.Upsert(null, products.Select(p => p.Id).ToArray());
+            _RatioRankingRepo.Upsert(ObjectId.Empty, products.Select(p => p.Id).ToArray());
 
             RankProductCategories(MAX_COUNT, HOURS_AGO);
         }
@@ -57,8 +57,8 @@ namespace Business {
             var result = ProductRepo.Collection.Aggregate(pipeline);
 
             foreach (var doc in result.ResultDocuments) {
-                var categoryId = doc["_id"].AsString;
-                var productIds = doc["products"].AsBsonArray.Select(id => id.AsObjectId.ToString()).Take(count).ToArray();
+                var categoryId = doc["_id"].AsObjectId;
+                var productIds = doc["products"].AsBsonArray.Select(id => id.AsObjectId).Take(count).ToArray();
 
                 _RatioRankingRepo.Upsert(categoryId, productIds);
             }

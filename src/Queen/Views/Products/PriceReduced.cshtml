@@ -51,10 +51,10 @@
 </style>
 <div class="row-fluid">
     <div class="span2 well subcategories">
-        @{Html.RenderPartial("_SubCategories", (string)ViewBag.CategoryId);}
+        @{Html.RenderPartial("_SubCategories", (ObjectId)ViewBag.CategoryId);}
     </div>
     <div class="span10">
-        @{Html.RenderPartial("_NavCategories", (string)ViewBag.CategoryId);}
+        @{Html.RenderPartial("_NavCategories", (ObjectId)ViewBag.CategoryId);}
         <div class="alert alert-info">亲爱的，这些都是降价幅度最大的商品，如果有钟意的要抓紧哦～</div>
         @{
             var placeholderImg = Url.Content("~/Content/blank.gif");

@@ -8,7 +8,7 @@ namespace Business {
     public class Indexes {
         public static void Ensure(){
             
-            ProductRepo.Collection.EnsureIndex(IndexKeys.Ascending("CategoryIds"));
+            //ProductRepo.Collection.EnsureIndex(IndexKeys.Ascending("CategoryIds"));
             ProductRepo.Collection.EnsureIndex(IndexKeys.Ascending("UpdateTime"));
             ProductRepo.Collection.EnsureIndex(IndexKeys.Ascending("Source", "Number"), IndexOptions.SetUnique(true));
             ProductRepo.Collection.EnsureIndex(IndexKeys.Ascending("ChangedRatio", "UpdateTime", "CategoryIds"));

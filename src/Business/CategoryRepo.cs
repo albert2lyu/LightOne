@@ -1,4 +1,5 @@
 ﻿using Common.Data;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using System;
@@ -22,8 +23,8 @@ namespace Business {
         //    return Collection.Find(Query<Category>.EQ(c => c.Source, source));
         //}
 
-        public Category Get(string id) {
-            if (string.IsNullOrWhiteSpace(id))
+        public Category Get(ObjectId id) {
+            if (id == ObjectId.Empty)
                 return null;
             return Collection.FindOne(Query<Category>.EQ(c => c.Id, id));
         }
@@ -32,13 +33,13 @@ namespace Business {
             return Collection.FindOne(Query.And(Query<Category>.EQ(c => c.Source, source), Query<Category>.EQ(c => c.Number, number)));
         }
 
-        public IEnumerable<Category> GetByIds(string[] ids) {
+        public IEnumerable<Category> GetByIds(ObjectId[] ids) {
             if (ids == null || ids.Length == 0)
                 return null;
             return Collection.Find(Query<Category>.In(p => p.Id, ids));
         }
 
-        public IEnumerable<Category> GetAncestorCategories(string id) {
+        public IEnumerable<Category> GetAncestorCategories(ObjectId id) {
             var category = Get(id);
             if (category == null)
                 yield break;
@@ -61,7 +62,7 @@ namespace Business {
                     .SetSortOrder(SortBy<Category>.Ascending(c => c.Sort));
         }
 
-        public IEnumerable<Tuple<Category, IEnumerable<Category>>> GetCategoryTree(string categoryId) {
+        public IEnumerable<Tuple<Category, IEnumerable<Category>>> GetCategoryTree(ObjectId categoryId) {
             var category = Get(categoryId);
             if (category == null) {
                 // 分类不存在，返回顶级分类
@@ -97,17 +98,17 @@ namespace Business {
         //    Collection.Update(Query<Category>.EQ(c => c.Id, categoryId), Update<Category>.Set(c => c.Enable, false));
         //}
 
-        public void UpdateProductsUpdateTime(string id, DateTime productsUpdateTime) {
+        public void UpdateProductsUpdateTime(ObjectId id, DateTime productsUpdateTime) {
             Collection.Update(Query<Category>.EQ(c => c.Id, id),
                     Update<Category>.Set(c => c.ProductsUpdateTime, productsUpdateTime));
         }
 
-        public void ResetStableTimes(string id) {
+        public void ResetStableTimes(ObjectId id) {
             Collection.Update(Query<Category>.EQ(c => c.Id, id),
                     Update<Category>.Set(c => c.StableTimes, 0));
         }
 
-        public void IncreaseStableTimes(string id, int maxStableTimes = 24) {
+        public void IncreaseStableTimes(ObjectId id, int maxStableTimes = 24) {
             Collection.Update(Query.And(
                     Query<Category>.EQ(c => c.Id, id),
                     Query<Category>.LT(c => c.StableTimes, maxStableTimes)),

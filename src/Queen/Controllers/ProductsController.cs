@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using Business;
 using Queen.Models;
 using System.Collections.Generic;
+using MongoDB.Bson;
 
 namespace Queen.Controllers
 {
@@ -12,7 +13,7 @@ namespace Queen.Controllers
         private readonly CategoryRepo _CategoryRepo = new CategoryRepo();
 
         //[OutputCache(Duration=600)]
-        public ActionResult PriceReduced(string categoryId) {
+        public ActionResult PriceReduced(ObjectId categoryId) {
             var category = _CategoryRepo.Get(categoryId);
 
             IEnumerable<Product> products = new Product[0];
@@ -24,13 +25,13 @@ namespace Queen.Controllers
             //var products = Product.GetByPriceReduced(categoryId, 150, 24);
 
             ViewBag.CategoryName = category != null ? category.Name : string.Empty;
-            ViewBag.CategoryId = category != null ? category.Id : string.Empty;
+            ViewBag.CategoryId = categoryId;
             ViewBag.CategoryUrl = category != null ? category.Url : string.Empty;
 
             return View(products);
         }
 
-        public ActionResult Details(string id) {
+        public ActionResult Details(ObjectId id) {
             var product = Product.GetById(id);
             if (product == null)
                 return View("ProductNotExists");
@@ -41,7 +42,7 @@ namespace Queen.Controllers
             return View(form);
         }
 
-        public ActionResult PriceHistoryChart(string id) {
+        public ActionResult PriceHistoryChart(ObjectId id) {
             var product = Product.GetById(id);
             if (product == null)
                 return new EmptyResult();

@@ -1,4 +1,5 @@
 ﻿using Common.Data;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using System;
@@ -14,11 +15,11 @@ namespace Business {
             Collection = DatabaseFactory.CreateMongoDatabase().GetCollection<RatioRanking>("ratio_rankings");
         }
 
-        public RatioRanking GetByCategoryId(string categoryId) {
+        public RatioRanking GetByCategoryId(ObjectId categoryId) {
             return Collection.FindOne(Query<RatioRanking>.EQ(p => p.CategoryId, categoryId));
         }
 
-        public void Upsert(string categoryId, string[] productIds) {
+        public void Upsert(ObjectId categoryId, ObjectId[] productIds) {
             var ranking = GetByCategoryId(categoryId);
             if (ranking == null) {
                 ranking = new RatioRanking();

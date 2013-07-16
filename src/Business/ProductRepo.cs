@@ -1,4 +1,5 @@
 ﻿using Common.Data;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using System;
@@ -14,12 +15,12 @@ namespace Business {
             Collection = DatabaseFactory.CreateMongoDatabase().GetCollection<Product>("products");
         }
 
-        public IEnumerable<Product> GetByCategoryId(string categoryId) {
-            if (string.IsNullOrWhiteSpace(categoryId))
-                return new Product[0];
+        //public IEnumerable<Product> GetByCategoryId(ObjectId categoryId) {
+        //    if (categoryId == ObjectId.Empty)
+        //        return new Product[0];
 
-            return Collection.Find(Query<Product>.EQ(p => p.CategoryIds, categoryId));
-        }
+        //    return Collection.Find(Query<Product>.EQ(p => p.CategoryIds, categoryId));
+        //}
 
         public Product GetBySourceAndNumber(string source, string number) {
             return Collection.FindOne(Query.And(

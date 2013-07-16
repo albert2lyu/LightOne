@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,7 +8,7 @@ namespace Business
     public class ProductArchiveService {
         private readonly CategoryRepo _CategoryRepo = new CategoryRepo();
 
-        public void Archive(string categoryId, IEnumerable<Product> products) {
+        public void Archive(ObjectId categoryId, IEnumerable<Product> products) {
             var ancestorCategoryIds = _CategoryRepo.GetAncestorCategories(categoryId).Select(c => c.Id).ToArray();
 
             var hasChanges = false;

@@ -12,14 +12,14 @@ namespace Business {
     /// 折扣排行
     /// </summary>
     public class RatioRanking {
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        //[BsonRepresentation(BsonType.ObjectId)]
+        public ObjectId Id { get; set; }
 
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime UpdateTime { get; set; }
 
-        public string CategoryId { get; set; }
+        public ObjectId CategoryId { get; set; }
 
-        public string[] ProductIds { get; set; }
+        public ObjectId[] ProductIds { get; set; }
     }
 }

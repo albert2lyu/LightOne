@@ -55,12 +55,12 @@ namespace Bee.Yhd {
             // 从网站上抓取产品信息，因为抓到的数据可能重复，所以需要过滤掉重复数据，否则在多线程更新数据库的时候可能产生冲突
             var downloadProducts = await new YhdProductExtractor().ExtractProductsInCategoryAsync(category.Number);
             // 获取已经存在产品的信息签名
-            //var existingProducts = downloadProducts.Select(p => {
-            //    var existProduct = _ProductRepo.GetBySourceAndNumber(p.Source, p.Number);
-            //    return new ProductSignature { Source = p.Source, Number = p.Number, Signature = existProduct != null ? existProduct.Signature : null };
-            //});
-            var existingProducts = _ProductRepo.GetByCategoryId(category.Id)
-                .Select(p => new ProductSignature { Source = p.Source, Number = p.Number, Signature = p.Signature });
+            var existingProducts = downloadProducts.Select(p => {
+                var existProduct = _ProductRepo.GetBySourceAndNumber(p.Source, p.Number);
+                return new ProductSignature { Source = p.Source, Number = p.Number, Signature = existProduct != null ? existProduct.Signature : null };
+            });
+            //var existingProducts = _ProductRepo.GetByCategoryId(category.Id)
+            //    .Select(p => new ProductSignature { Source = p.Source, Number = p.Number, Signature = p.Signature });
 
             // 计算刚下载的产品的签名
             downloadProducts.AsParallel().ForAll(p => p.Signature = ProductSignature.ComputeSignature(p));

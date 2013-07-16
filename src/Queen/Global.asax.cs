@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Common.Logging;
 using Queen.Models;
+using MongoDB.Bson;
 
 namespace Queen {
     // Note: For instructions on enabling IIS6 or IIS7 classic mode, 
@@ -20,6 +21,8 @@ namespace Queen {
 
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);
+
+            ModelBinders.Binders.Add(typeof(ObjectId), new ObjectIdModelBinder());
 
             ControllerBuilder.Current.SetControllerFactory(typeof(DummyTempDataProviderControllerFactory));
         }
