@@ -50,7 +50,7 @@ namespace Bee.Yhd {
             cookieContainer.Add(new Cookie("provinceId", "2", "/", "www.yihaodian.com")); // 北京站
 
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate, CookieContainer = cookieContainer })) {
-                var responseContent = await client.GetStringAsync(url);
+                var responseContent = await client.GetStringAsync(url, 3);
 
                 var html = JsonConvert.DeserializeAnonymousType(responseContent, new { value = string.Empty }).value;
                 if (string.IsNullOrWhiteSpace(html))
@@ -108,7 +108,7 @@ namespace Bee.Yhd {
 
                 using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate })) {
                     try {
-                        var json = await client.GetStringAsync(url);    // 这里出现异常
+                        var json = await client.GetStringAsync(url, 3);
 
                         var productsPrices = JsonConvert.DeserializeAnonymousType(json, new[] {
                             new {

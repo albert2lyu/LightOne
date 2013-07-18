@@ -25,7 +25,7 @@ namespace Bee.Yhd {
             const string URL = @"http://www.yihaodian.com/marketing/allproduct.html";
 
             using (var client = new HttpClient(new HttpClientHandler { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate })) {
-                var responseContent = await client.GetStringAsync(URL);
+                var responseContent = await client.GetStringAsync(URL, 3);
 
                 var doc = new HtmlDocument();
                 doc.LoadHtml(responseContent);
