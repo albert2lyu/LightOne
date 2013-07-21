@@ -20,6 +20,8 @@ namespace Daemon {
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public void Execute(IJobExecutionContext context) {
+            RankRatio();
+
             var sw = new Stopwatch();
             sw.Start();
             Logger.Info("数据上传作业启动");
@@ -28,6 +30,17 @@ namespace Daemon {
             service.Run("queen");
 
             Logger.InfoFormat("数据上传作业完成，用时{0}", sw.Elapsed);
+        }
+
+        private void RankRatio() {
+            var sw = new Stopwatch();
+            sw.Start();
+            Logger.Info("RankRatio启动");
+
+            var service = new RatioRankingService();
+            service.RankAllCategories();
+
+            Logger.InfoFormat("RankRatio完成，用时{0}", sw.Elapsed);
         }
     }
 }

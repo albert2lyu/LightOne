@@ -14,7 +14,7 @@ namespace Business {
         /// 保存分类信息，返回需要抓取数据的分类
         /// </summary>
         /// <param name="categories"></param>
-        public IEnumerable<Category> Archive(IEnumerable<Category> categories) {
+        public IEnumerable<Category> Archive(IList<Category> categories) {
             //var cat = categories.FirstOrDefault();
             //if (cat == null)
             //    yield break;

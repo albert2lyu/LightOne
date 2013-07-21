@@ -16,9 +16,16 @@ namespace Bee.Yhd {
     class YhdCategoryExtractor {
         private readonly static ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public async Task<IEnumerable<Category>> Extract() {
+        public async Task<IList<Category>> Extract() {
             var doc = await DownloadHtmlDocument();
-            return ParseCategories(doc);
+            var rootCategoryNames = GetRootCategoryNames(doc).ToList();
+            var categories = ParseCategories(doc).ToList();
+            foreach (var category in categories) {
+                if (string.IsNullOrWhiteSpace(category.ParentNumber)) {
+                    category.Sort = rootCategoryNames.IndexOf(category.Name);
+                }
+            }
+            return categories;
         }
 
         private async Task<HtmlDocument> DownloadHtmlDocument() {
@@ -30,6 +37,12 @@ namespace Bee.Yhd {
                 var doc = new HtmlDocument();
                 doc.LoadHtml(responseContent);
                 return doc;
+            }
+        }
+
+        private IEnumerable<string> GetRootCategoryNames(HtmlDocument doc) {
+            foreach (var node in doc.DocumentNode.SelectNodes(@"//ul[@class='tab']/li/a")) {
+                yield return node.InnerText;
             }
         }
 

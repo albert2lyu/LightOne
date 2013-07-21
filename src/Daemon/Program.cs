@@ -19,19 +19,19 @@ namespace Daemon {
             var scheduler = schedulerFactory.GetScheduler();
             scheduler.Start();
             
-            ScheduleRatioRankingJob(scheduler);
+            //ScheduleRatioRankingJob(scheduler);
             ScheduleDataUploadingJob(scheduler);
         }
 
-        private static void ScheduleRatioRankingJob(IScheduler scheduler) {
-            const int INTERVAL_IN_MINUTES = 15;
-            scheduler.ScheduleJob(
-                JobBuilder.Create<RatioRankingJob>().WithIdentity("RatioRankingJob").Build(),
-                TriggerBuilder.Create().WithIdentity("RatioRankingTrigger").StartNow().WithSimpleSchedule(x => x.RepeatForever().WithIntervalInMinutes(INTERVAL_IN_MINUTES)).Build());
-        }
+        //private static void ScheduleRatioRankingJob(IScheduler scheduler) {
+        //    const int INTERVAL_IN_MINUTES = 15;
+        //    scheduler.ScheduleJob(
+        //        JobBuilder.Create<RatioRankingJob>().WithIdentity("RatioRankingJob").Build(),
+        //        TriggerBuilder.Create().WithIdentity("RatioRankingTrigger").StartNow().WithSimpleSchedule(x => x.RepeatForever().WithIntervalInMinutes(INTERVAL_IN_MINUTES)).Build());
+        //}
 
         private static void ScheduleDataUploadingJob(IScheduler scheduler) {
-            const int INTERVAL_IN_MINUTES = 30;
+            const int INTERVAL_IN_MINUTES = 15;
             scheduler.ScheduleJob(
                 JobBuilder.Create<DataUploadingJob>().WithIdentity("DataUploadingJob").Build(),
                 TriggerBuilder.Create().WithIdentity("DataUploadingTrigger").StartNow().WithSimpleSchedule(x => x.RepeatForever().WithIntervalInMinutes(INTERVAL_IN_MINUTES)).Build());
