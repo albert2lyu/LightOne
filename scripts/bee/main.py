@@ -4,8 +4,9 @@ import httplib2
 import xml.etree.ElementTree as ElementTree
 import pymongo
 from datetime import datetime
+import sys
 
-class Index:
+class YhdIndex:
 	def __init__(self, http, url):
 		response, content = http.request(url)
 		root = ElementTree.fromstring(content)
@@ -20,7 +21,7 @@ class Index:
 		self.product_path = root.find('product_path').text
 		self.products = [node.text for node in root.find('products')]
 
-class Categories:
+class YhdCategories:
 	def __init__(self, http, url):
 		response, content = http.request(url)
 		self.root = ElementTree.fromstring(content)
@@ -36,8 +37,7 @@ class Categories:
 			pcid = node.find('pcid').text)
 
 
-
-class Products:
+class YhdProducts:
 	def __init__(self, http, url):
 		response, content = http.request(url)
 		self.root = ElementTree.fromstring(content)
@@ -67,14 +67,12 @@ class Products:
 			prices = self.parse_region_price(node.find('sale_price')),
 			product_url_m = node.find('product_url_m').text)
 
-class Database:
+class CategoryRepo:
 	def __init__(self, db):
-		self.db = db
+		self.collection = db.categories
+		self.collection.ensure_index([('Source', pymongo.ASCENDING), ('Number', pymongo.ASCENDING)])
 
-	def save_categories(self, categories):
-		collection = self.db.categories
-		collection.ensure_index([('Source', pymongo.ASCENDING), ('Number', pymongo.ASCENDING)])
-
+	def save(self, categories):
 		sort = 0
 		for category in categories:
 			number = category['cid']
@@ -83,7 +81,7 @@ class Database:
 			if parent_number == '0':
 				parent_number = None
 
-			exist_category = collection.find_one({'$and': [{'Source': 'yhd'}, {'Number': number}]})
+			exist_category = self.collection.find_one({'$and': [{'Source': 'yhd'}, {'Number': number}]})
 
 			if exist_category == None:
 				exist_category = dict(Source = 'yhd',
@@ -94,7 +92,22 @@ class Database:
 			exist_category['UpdateTime'] = datetime.now()
 			exist_category['Sort'] = sort
 			sort += 1
-			collection.save(exist_category)
+			self.collection.save(exist_category)
+
+	def get_category_ancestors(self, number):
+		category = self.collection.find_one({'$and': [{'Source': 'yhd'}, {'Number': number}]})
+		if category != None:
+			if category['ParentNumber'] != None:
+				for _ in self.get_category_ancestors(category['ParentNumber']):
+					yield _
+			yield category['_id']
+
+class ProductRepo:
+	def __init__(self, db):
+		self.category_repo = CategoryRepo(db)
+		self.price_history_repo = PriceHistoryRepo(db)
+		self.collection = db.products
+		self.collection.ensure_index([('Source', pymongo.ASCENDING), ('Number', pymongo.ASCENDING)])
 
 	def has_changed(self, exist, new, fields):
 		for field in fields:
@@ -106,10 +119,7 @@ class Database:
 			return 0
 		return (newPrice - oldPrice) / oldPrice
 
-	def save_products(self, products):
-		collection = self.db.products
-		collection.ensure_index([('Source', pymongo.ASCENDING), ('Number', pymongo.ASCENDING)])
-
+	def save(self, products):
 		for product in products:
 			new_product = dict(
 				Number = product['product_id'],
@@ -117,14 +127,14 @@ class Database:
 				SubTitle = product['subtitle'],
 				Brand = product['brand_name'],
 				ImgUrl = product['pic_url'],
-				CategoryIds = list(self.get_category_ancestors(product['category_id'])),
+				CategoryIds = list(self.category_repo.get_category_ancestors(product['category_id'])),
 				Url = product['product_url']
 				)
 			if '北京' in product['prices']:
 				new_product['Price'] = product['prices']['北京']
 
 			# url_m = product['product_url_m']
-			exist_product = collection.find_one({'$and': [{'Source': 'yhd'}, {'Number': new_product['Number']}]})
+			exist_product = self.collection.find_one({'$and': [{'Source': 'yhd'}, {'Number': new_product['Number']}]})
 			if exist_product == None:
 				exist_product = dict(Source = 'yhd',
 					Number = new_product['Number'],
@@ -142,48 +152,49 @@ class Database:
 
 				exist_product.update(new_product)
 				exist_product['UpdateTime'] = datetime.now()
-				collection.save(exist_product)
+				self.collection.save(exist_product)
 
 				# 记录历史价格
 				if old_price != new_price:
-					self.save_price_history(exist_product['_id'], new_price)
+					self.price_history_repo.save(exist_product['_id'], new_price)
 
 		print('.', end = '', flush = True)
 
-	def save_price_history(self, product_id, price):
-		collection = self.db.price_history
-		collection.find_and_modify({'_id': product_id},
+
+class PriceHistoryRepo:
+	def __init__(self, db):
+		self.collection = db.price_history
+
+	def save(self, product_id, price):
+		self.collection.find_and_modify({'_id': product_id},
 			{ '$push': { '_': {'time': datetime.now(), 'price': price }}},
 			upsert = True)
 
-	def get_category_ancestors(self, number):
-		collection = self.db.categories
-		collection.ensure_index([('Source', pymongo.ASCENDING), ('Number', pymongo.ASCENDING)])
 
-		category = collection.find_one({'$and': [{'Source': 'yhd'}, {'Number': number}]})
-		if category != None:
-			if category['ParentNumber'] != None:
-				for _ in self.get_category_ancestors(category['ParentNumber']):
-					yield _
-			yield category['_id']
+def extract_products(h):
+	index = YhdIndex(h, 'http://union.yihaodian.com/api/productInfo/yihaodian/index.xml')
 
-
-
-
-
-if __name__ == '__main__':
-	h = httplib2.Http('.cache')
-	index = Index(h, 'http://union.yihaodian.com/api/productInfo/yihaodian/index.xml')
-
-	db = Database(pymongo.MongoClient().queen_new)
+	db = pymongo.MongoClient().queen_new
 
 	print('处理分类')
-	categories = Categories(h, index.category_path)
-	db.save_categories(categories)
-	print('done')
+	categories = YhdCategories(h, index.category_path)
+	CategoryRepo(db).save(categories)
 
 	print('处理产品')
 	for products_url in index.products:
-		products = Products(h, index.product_path + products_url)
-		db.save_products(products)
+		products = YhdProducts(h, index.product_path + products_url)
+		ProductRepo(db).save(products)
+		break
+
+def extract_price(h):
+	pass
+
+if __name__ == '__main__':
+	h = httplib2.Http('.cache')
+
+	if len(sys.argv) == 1:
+		extract_products(h)
+	else:
+		extract_price(h)
+
 	print('done')
