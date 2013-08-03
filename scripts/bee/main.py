@@ -96,13 +96,15 @@ class Database:
 			sort += 1
 			collection.save(exist_category)
 
-	def merge_product(self, exist, new, fields):
-		has_changed = False
+	def has_changed(self, exist, new, fields):
 		for field in fields:
 			if exist.get(field) != new.get(field):
-				exist[field] = new.get(field)
-				has_changed = True
-		return has_changed
+				return True
+
+	def cacl_changed_ratio(self, oldPrice, newPrice):
+		if oldPrice == None or newPrice == None or oldPrice == 0:
+			return 0
+		return (newPrice - oldPrice) / oldPrice
 
 	def save_products(self, products):
 		collection = self.db.products
@@ -122,22 +124,37 @@ class Database:
 				new_product['Price'] = product['prices']['北京']
 
 			# url_m = product['product_url_m']
-			# price
-			# oldprice
-			# changedratio
-			# pricehistory
 			exist_product = collection.find_one({'$and': [{'Source': 'yhd'}, {'Number': new_product['Number']}]})
 			if exist_product == None:
 				exist_product = dict(Source = 'yhd',
 					Number = new_product['Number'],
 					CreateTime = datetime.now())
 
-			has_changed = self.merge_product(exist_product, new_product, ('Number', 'Name', 'SubTitle', 'Brand', 'ImgUrl', 'CategoryIds', 'Url', 'Price'))
+			has_changed = self.has_changed(exist_product, new_product, ('Number', 'Name', 'SubTitle', 'Brand', 'ImgUrl', 'CategoryIds', 'Url', 'Price'))
 			if has_changed:
+				# 处理价格变化
+				old_price = exist_product.get('Price')
+				new_price = new_product.get('Price')
+				if old_price != new_price:
+					# 价格发生变化
+					exist_product['OldPrice'] = old_price
+					exist_product['ChangedRatio'] = self.cacl_changed_ratio(old_price, new_price)
+
+				exist_product.update(new_product)
 				exist_product['UpdateTime'] = datetime.now()
 				collection.save(exist_product)
 
+				# 记录历史价格
+				if old_price != new_price:
+					self.save_price_history(exist_product['_id'], new_price)
+
 		print('.', end = '', flush = True)
+
+	def save_price_history(self, product_id, price):
+		collection = self.db.price_history
+		collection.find_and_modify({'_id': product_id},
+			{ '$push': { '_': {'time': datetime.now(), 'price': price }}},
+			upsert = True)
 
 	def get_category_ancestors(self, number):
 		collection = self.db.categories
