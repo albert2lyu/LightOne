@@ -236,7 +236,8 @@ def process_products_price(http, db, products):
 						db.products.collection.save(product)
 						price_history_repo.save(product['_id'], new_price)
 					break
-	except TimeoutError:
+	except:
+		print("Unexpected error:", sys.exc_info()[0])
 		time.sleep(60)
 		process_products_price(http, db, products)
 
