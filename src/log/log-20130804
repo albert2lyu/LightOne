@@ -1,0 +1,351 @@
+2013-08-04 22:13:23,630 [15] INFO  Queen.MvcApplication - 站点停止
+2013-08-04 22:15:30,064 [24] INFO  Queen.MvcApplication - 站点启动
+2013-08-04 22:17:11,748 [15] INFO  Queen.MvcApplication - 站点停止
+2013-08-04 22:17:17,385 [24] INFO  Queen.MvcApplication - 站点启动
+2013-08-04 22:17:51,549 [10] INFO  Queen.MvcApplication - 站点停止
+2013-08-04 22:39:14,345 [8] INFO  Queen.MvcApplication - 站点启动
+2013-08-04 22:39:15,860 [44] ERROR Queen.Models.UnhandledExceptionFilter - controller：Products，action：PriceHistoryChart，发生未捕获异常
+System.IO.FileFormatException: An error occurred while deserializing the _ property of class Business.PriceHistory: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData. ---> System.IO.FileFormatException: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData.
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.Serializers.EnumerableSerializer`1.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   --- 内部异常堆栈跟踪的结尾 ---
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Driver.Internal.MongoReplyMessage`1.ReadFrom(BsonBuffer buffer, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.Internal.MongoConnection.ReceiveMessage[TDocument](BsonBinaryReaderSettings readerSettings, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetReply(MongoConnection connection, MongoRequestMessage message)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetFirst()
+   在 MongoDB.Driver.MongoCursorEnumerator`1.MoveNext()
+   在 System.Linq.Enumerable.FirstOrDefault[TSource](IEnumerable`1 source)
+   在 MongoDB.Driver.MongoCollection.FindOneAs[TDocument](IMongoQuery query)
+   在 MongoDB.Driver.MongoCollection`1.FindOne(IMongoQuery query)
+   在 Business.PriceHistoryRepo.Get(ObjectId id) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 19
+   在 Business.PriceHistoryRepo.GetPricesInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 30
+   在 Business.PriceHistoryRepo.GetPriceInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 23
+   在 Queen.Controllers.ProductsController.<>c__DisplayClassd.<PriceHistoryChart>b__a(DateTime d) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 71
+   在 System.Linq.Enumerable.<>c__DisplayClass12`3.<CombineSelectors>b__11(TSource x)
+   在 System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   在 System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   在 System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeList(JsonWriter writer, IList values, JsonArrayContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.Serialize(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonConvert.SerializeObject(Object value, Formatting formatting, JsonSerializerSettings settings)
+   在 FusionChartsDriver.MSStepLine.ToJson() 位置 d:\GitHub\LightOne\src\FusionChartsDriver\MSStepLine.cs:行号 27
+   在 Queen.Controllers.ProductsController.PriceHistoryChart(ObjectId id) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 79
+   在 lambda_method(Closure , ControllerBase , Object[] )
+   在 System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
+   在 System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<InvokeActionMethodWithFilters>b__12()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodFilter(IActionFilter filter, ActionExecutingContext preContext, Func`1 continuation)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<>c__DisplayClass17.<InvokeActionMethodWithFilters>b__14()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeAction(ControllerContext controllerContext, String actionName)
+2013-08-04 22:39:23,241 [45] ERROR Queen.Models.UnhandledExceptionFilter - controller：Products，action：PriceHistoryChart，发生未捕获异常
+System.IO.FileFormatException: An error occurred while deserializing the _ property of class Business.PriceHistory: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData. ---> System.IO.FileFormatException: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData.
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.Serializers.EnumerableSerializer`1.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   --- 内部异常堆栈跟踪的结尾 ---
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Driver.Internal.MongoReplyMessage`1.ReadFrom(BsonBuffer buffer, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.Internal.MongoConnection.ReceiveMessage[TDocument](BsonBinaryReaderSettings readerSettings, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetReply(MongoConnection connection, MongoRequestMessage message)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetFirst()
+   在 MongoDB.Driver.MongoCursorEnumerator`1.MoveNext()
+   在 System.Linq.Enumerable.FirstOrDefault[TSource](IEnumerable`1 source)
+   在 MongoDB.Driver.MongoCollection.FindOneAs[TDocument](IMongoQuery query)
+   在 MongoDB.Driver.MongoCollection`1.FindOne(IMongoQuery query)
+   在 Business.PriceHistoryRepo.Get(ObjectId id) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 19
+   在 Business.PriceHistoryRepo.GetPricesInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 30
+   在 Business.PriceHistoryRepo.GetPriceInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 23
+   在 Queen.Controllers.ProductsController.<>c__DisplayClassd.<PriceHistoryChart>b__a(DateTime d) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 71
+   在 System.Linq.Enumerable.<>c__DisplayClass12`3.<CombineSelectors>b__11(TSource x)
+   在 System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   在 System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   在 System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeList(JsonWriter writer, IList values, JsonArrayContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.Serialize(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonConvert.SerializeObject(Object value, Formatting formatting, JsonSerializerSettings settings)
+   在 FusionChartsDriver.MSStepLine.ToJson() 位置 d:\GitHub\LightOne\src\FusionChartsDriver\MSStepLine.cs:行号 27
+   在 Queen.Controllers.ProductsController.PriceHistoryChart(ObjectId id) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 79
+   在 lambda_method(Closure , ControllerBase , Object[] )
+   在 System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
+   在 System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<InvokeActionMethodWithFilters>b__12()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodFilter(IActionFilter filter, ActionExecutingContext preContext, Func`1 continuation)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<>c__DisplayClass17.<InvokeActionMethodWithFilters>b__14()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeAction(ControllerContext controllerContext, String actionName)
+2013-08-04 22:39:38,820 [48] ERROR Queen.Models.UnhandledExceptionFilter - controller：Products，action：PriceHistoryChart，发生未捕获异常
+System.IO.FileFormatException: An error occurred while deserializing the _ property of class Business.PriceHistory: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData. ---> System.IO.FileFormatException: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData.
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.Serializers.EnumerableSerializer`1.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   --- 内部异常堆栈跟踪的结尾 ---
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Driver.Internal.MongoReplyMessage`1.ReadFrom(BsonBuffer buffer, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.Internal.MongoConnection.ReceiveMessage[TDocument](BsonBinaryReaderSettings readerSettings, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetReply(MongoConnection connection, MongoRequestMessage message)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetFirst()
+   在 MongoDB.Driver.MongoCursorEnumerator`1.MoveNext()
+   在 System.Linq.Enumerable.FirstOrDefault[TSource](IEnumerable`1 source)
+   在 MongoDB.Driver.MongoCollection.FindOneAs[TDocument](IMongoQuery query)
+   在 MongoDB.Driver.MongoCollection`1.FindOne(IMongoQuery query)
+   在 Business.PriceHistoryRepo.Get(ObjectId id) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 19
+   在 Business.PriceHistoryRepo.GetPricesInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 30
+   在 Business.PriceHistoryRepo.GetPriceInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 23
+   在 Queen.Controllers.ProductsController.<>c__DisplayClassd.<PriceHistoryChart>b__a(DateTime d) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 71
+   在 System.Linq.Enumerable.<>c__DisplayClass12`3.<CombineSelectors>b__11(TSource x)
+   在 System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   在 System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   在 System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeList(JsonWriter writer, IList values, JsonArrayContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.Serialize(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonConvert.SerializeObject(Object value, Formatting formatting, JsonSerializerSettings settings)
+   在 FusionChartsDriver.MSStepLine.ToJson() 位置 d:\GitHub\LightOne\src\FusionChartsDriver\MSStepLine.cs:行号 27
+   在 Queen.Controllers.ProductsController.PriceHistoryChart(ObjectId id) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 79
+   在 lambda_method(Closure , ControllerBase , Object[] )
+   在 System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
+   在 System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<InvokeActionMethodWithFilters>b__12()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodFilter(IActionFilter filter, ActionExecutingContext preContext, Func`1 continuation)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<>c__DisplayClass17.<InvokeActionMethodWithFilters>b__14()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeAction(ControllerContext controllerContext, String actionName)
+2013-08-04 22:39:46,782 [46] ERROR Queen.Models.UnhandledExceptionFilter - controller：Products，action：PriceHistoryChart，发生未捕获异常
+System.IO.FileFormatException: An error occurred while deserializing the _ property of class Business.PriceHistory: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData. ---> System.IO.FileFormatException: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData.
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.Serializers.EnumerableSerializer`1.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   --- 内部异常堆栈跟踪的结尾 ---
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Driver.Internal.MongoReplyMessage`1.ReadFrom(BsonBuffer buffer, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.Internal.MongoConnection.ReceiveMessage[TDocument](BsonBinaryReaderSettings readerSettings, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetReply(MongoConnection connection, MongoRequestMessage message)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetFirst()
+   在 MongoDB.Driver.MongoCursorEnumerator`1.MoveNext()
+   在 System.Linq.Enumerable.FirstOrDefault[TSource](IEnumerable`1 source)
+   在 MongoDB.Driver.MongoCollection.FindOneAs[TDocument](IMongoQuery query)
+   在 MongoDB.Driver.MongoCollection`1.FindOne(IMongoQuery query)
+   在 Business.PriceHistoryRepo.Get(ObjectId id) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 19
+   在 Business.PriceHistoryRepo.GetPricesInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 30
+   在 Business.PriceHistoryRepo.GetPriceInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 23
+   在 Queen.Controllers.ProductsController.<>c__DisplayClassd.<PriceHistoryChart>b__a(DateTime d) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 71
+   在 System.Linq.Enumerable.<>c__DisplayClass12`3.<CombineSelectors>b__11(TSource x)
+   在 System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   在 System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   在 System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeList(JsonWriter writer, IList values, JsonArrayContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.Serialize(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonConvert.SerializeObject(Object value, Formatting formatting, JsonSerializerSettings settings)
+   在 FusionChartsDriver.MSStepLine.ToJson() 位置 d:\GitHub\LightOne\src\FusionChartsDriver\MSStepLine.cs:行号 27
+   在 Queen.Controllers.ProductsController.PriceHistoryChart(ObjectId id) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 79
+   在 lambda_method(Closure , ControllerBase , Object[] )
+   在 System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
+   在 System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<InvokeActionMethodWithFilters>b__12()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodFilter(IActionFilter filter, ActionExecutingContext preContext, Func`1 continuation)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<>c__DisplayClass17.<InvokeActionMethodWithFilters>b__14()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeAction(ControllerContext controllerContext, String actionName)
+2013-08-04 22:40:39,174 [44] ERROR Queen.Models.UnhandledExceptionFilter - controller：Products，action：PriceHistoryChart，发生未捕获异常
+System.IO.FileFormatException: An error occurred while deserializing the _ property of class Business.PriceHistory: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData. ---> System.IO.FileFormatException: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData.
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.Serializers.EnumerableSerializer`1.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   --- 内部异常堆栈跟踪的结尾 ---
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Driver.Internal.MongoReplyMessage`1.ReadFrom(BsonBuffer buffer, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.Internal.MongoConnection.ReceiveMessage[TDocument](BsonBinaryReaderSettings readerSettings, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetReply(MongoConnection connection, MongoRequestMessage message)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetFirst()
+   在 MongoDB.Driver.MongoCursorEnumerator`1.MoveNext()
+   在 System.Linq.Enumerable.FirstOrDefault[TSource](IEnumerable`1 source)
+   在 MongoDB.Driver.MongoCollection.FindOneAs[TDocument](IMongoQuery query)
+   在 MongoDB.Driver.MongoCollection`1.FindOne(IMongoQuery query)
+   在 Business.PriceHistoryRepo.Get(ObjectId id) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 19
+   在 Business.PriceHistoryRepo.GetPricesInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 30
+   在 Business.PriceHistoryRepo.GetPriceInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 23
+   在 Queen.Controllers.ProductsController.<>c__DisplayClassd.<PriceHistoryChart>b__a(DateTime d) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 71
+   在 System.Linq.Enumerable.<>c__DisplayClass12`3.<CombineSelectors>b__11(TSource x)
+   在 System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   在 System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   在 System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeList(JsonWriter writer, IList values, JsonArrayContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.Serialize(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonConvert.SerializeObject(Object value, Formatting formatting, JsonSerializerSettings settings)
+   在 FusionChartsDriver.MSStepLine.ToJson() 位置 d:\GitHub\LightOne\src\FusionChartsDriver\MSStepLine.cs:行号 27
+   在 Queen.Controllers.ProductsController.PriceHistoryChart(ObjectId id) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 79
+   在 lambda_method(Closure , ControllerBase , Object[] )
+   在 System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
+   在 System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<InvokeActionMethodWithFilters>b__12()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodFilter(IActionFilter filter, ActionExecutingContext preContext, Func`1 continuation)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<>c__DisplayClass17.<InvokeActionMethodWithFilters>b__14()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeAction(ControllerContext controllerContext, String actionName)
+2013-08-04 22:40:43,541 [46] ERROR Queen.Models.UnhandledExceptionFilter - controller：Products，action：PriceHistoryChart，发生未捕获异常
+System.IO.FileFormatException: An error occurred while deserializing the _ property of class Business.PriceHistory: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData. ---> System.IO.FileFormatException: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData.
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.Serializers.EnumerableSerializer`1.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   --- 内部异常堆栈跟踪的结尾 ---
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Driver.Internal.MongoReplyMessage`1.ReadFrom(BsonBuffer buffer, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.Internal.MongoConnection.ReceiveMessage[TDocument](BsonBinaryReaderSettings readerSettings, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetReply(MongoConnection connection, MongoRequestMessage message)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetFirst()
+   在 MongoDB.Driver.MongoCursorEnumerator`1.MoveNext()
+   在 System.Linq.Enumerable.FirstOrDefault[TSource](IEnumerable`1 source)
+   在 MongoDB.Driver.MongoCollection.FindOneAs[TDocument](IMongoQuery query)
+   在 MongoDB.Driver.MongoCollection`1.FindOne(IMongoQuery query)
+   在 Business.PriceHistoryRepo.Get(ObjectId id) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 19
+   在 Business.PriceHistoryRepo.GetPricesInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 30
+   在 Business.PriceHistoryRepo.GetPriceInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 23
+   在 Queen.Controllers.ProductsController.<>c__DisplayClassd.<PriceHistoryChart>b__a(DateTime d) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 71
+   在 System.Linq.Enumerable.<>c__DisplayClass12`3.<CombineSelectors>b__11(TSource x)
+   在 System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   在 System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   在 System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeList(JsonWriter writer, IList values, JsonArrayContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.Serialize(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonConvert.SerializeObject(Object value, Formatting formatting, JsonSerializerSettings settings)
+   在 FusionChartsDriver.MSStepLine.ToJson() 位置 d:\GitHub\LightOne\src\FusionChartsDriver\MSStepLine.cs:行号 27
+   在 Queen.Controllers.ProductsController.PriceHistoryChart(ObjectId id) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 79
+   在 lambda_method(Closure , ControllerBase , Object[] )
+   在 System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
+   在 System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<InvokeActionMethodWithFilters>b__12()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodFilter(IActionFilter filter, ActionExecutingContext preContext, Func`1 continuation)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<>c__DisplayClass17.<InvokeActionMethodWithFilters>b__14()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeAction(ControllerContext controllerContext, String actionName)
+2013-08-04 22:40:45,228 [44] ERROR Queen.Models.UnhandledExceptionFilter - controller：Products，action：PriceHistoryChart，发生未捕获异常
+System.IO.FileFormatException: An error occurred while deserializing the _ property of class Business.PriceHistory: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData. ---> System.IO.FileFormatException: Element 'price' does not match any field or property of class Business.PriceHistory+PriceHistoryData.
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.Serializers.EnumerableSerializer`1.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   --- 内部异常堆栈跟踪的结尾 ---
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.DeserializeMember(BsonReader bsonReader, Object obj, BsonMemberMap memberMap)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonClassMapSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Bson.Serialization.BsonSerializer.Deserialize(BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+   在 MongoDB.Driver.Internal.MongoReplyMessage`1.ReadFrom(BsonBuffer buffer, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.Internal.MongoConnection.ReceiveMessage[TDocument](BsonBinaryReaderSettings readerSettings, IBsonSerializationOptions serializationOptions)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetReply(MongoConnection connection, MongoRequestMessage message)
+   在 MongoDB.Driver.MongoCursorEnumerator`1.GetFirst()
+   在 MongoDB.Driver.MongoCursorEnumerator`1.MoveNext()
+   在 System.Linq.Enumerable.FirstOrDefault[TSource](IEnumerable`1 source)
+   在 MongoDB.Driver.MongoCollection.FindOneAs[TDocument](IMongoQuery query)
+   在 MongoDB.Driver.MongoCollection`1.FindOne(IMongoQuery query)
+   在 Business.PriceHistoryRepo.Get(ObjectId id) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 19
+   在 Business.PriceHistoryRepo.GetPricesInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 30
+   在 Business.PriceHistoryRepo.GetPriceInDay(ObjectId id, DateTime day) 位置 d:\GitHub\LightOne\src\Business\PriceHistoryRepo.cs:行号 23
+   在 Queen.Controllers.ProductsController.<>c__DisplayClassd.<PriceHistoryChart>b__a(DateTime d) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 71
+   在 System.Linq.Enumerable.<>c__DisplayClass12`3.<CombineSelectors>b__11(TSource x)
+   在 System.Linq.Enumerable.WhereSelectEnumerableIterator`2.MoveNext()
+   在 System.Collections.Generic.List`1..ctor(IEnumerable`1 collection)
+   在 System.Linq.Enumerable.ToList[TSource](IEnumerable`1 source)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeList(JsonWriter writer, IList values, JsonArrayContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.WriteMemberInfoProperty(JsonWriter writer, Object value, JsonProperty property)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeObject(JsonWriter writer, Object value, JsonObjectContract contract)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.SerializeValue(JsonWriter writer, Object value, JsonConverter memberConverter)
+   在 Newtonsoft.Json.Serialization.JsonSerializerWriter.Serialize(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonSerializer.SerializeInternal(JsonWriter jsonWriter, Object value)
+   在 Newtonsoft.Json.JsonConvert.SerializeObject(Object value, Formatting formatting, JsonSerializerSettings settings)
+   在 FusionChartsDriver.MSStepLine.ToJson() 位置 d:\GitHub\LightOne\src\FusionChartsDriver\MSStepLine.cs:行号 27
+   在 Queen.Controllers.ProductsController.PriceHistoryChart(ObjectId id) 位置 d:\GitHub\LightOne\src\Queen\Controllers\ProductsController.cs:行号 79
+   在 lambda_method(Closure , ControllerBase , Object[] )
+   在 System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters)
+   在 System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<InvokeActionMethodWithFilters>b__12()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodFilter(IActionFilter filter, ActionExecutingContext preContext, Func`1 continuation)
+   在 System.Web.Mvc.ControllerActionInvoker.<>c__DisplayClass15.<>c__DisplayClass17.<InvokeActionMethodWithFilters>b__14()
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeActionMethodWithFilters(ControllerContext controllerContext, IList`1 filters, ActionDescriptor actionDescriptor, IDictionary`2 parameters)
+   在 System.Web.Mvc.ControllerActionInvoker.InvokeAction(ControllerContext controllerContext, String actionName)
+2013-08-04 22:40:45,651 [42] INFO  Queen.MvcApplication - 站点停止
+2013-08-04 22:40:51,568 [14] INFO  Queen.MvcApplication - 站点启动

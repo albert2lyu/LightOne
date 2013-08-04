@@ -15,6 +15,10 @@ namespace Business {
             Collection = DatabaseFactory.CreateMongoDatabase().GetCollection<Product>("products");
         }
 
+        public Product Get(ObjectId id) {
+            return Collection.FindOne(Query<Product>.EQ(p => p.Id, id));
+        }
+
         //public IEnumerable<Product> GetByCategoryId(ObjectId categoryId) {
         //    if (categoryId == ObjectId.Empty)
         //        return new Product[0];

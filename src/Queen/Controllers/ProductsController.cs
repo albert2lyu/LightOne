@@ -12,6 +12,7 @@ namespace Queen.Controllers
     {
         private readonly CategoryRepo _CategoryRepo = new CategoryRepo();
         private readonly ProductRepo _ProductRepo = new ProductRepo();
+        private readonly PriceHistoryRepo _PriceHistoryRepo = new PriceHistoryRepo();
 
         //[OutputCache(Duration=600)]
         public ActionResult PriceReduced(ObjectId categoryId) {
@@ -28,13 +29,12 @@ namespace Queen.Controllers
 
             ViewBag.CategoryName = category != null ? category.Name : string.Empty;
             ViewBag.CategoryId = categoryId;
-            ViewBag.CategoryUrl = category != null ? category.Url : string.Empty;
 
             return View(products);
         }
 
         public ActionResult Details(ObjectId id) {
-            var product = Product.GetById(id);
+            var product = _ProductRepo.Get(id);
             if (product == null)
                 return View("ProductNotExists");
 
@@ -45,7 +45,7 @@ namespace Queen.Controllers
         }
 
         public ActionResult PriceHistoryChart(ObjectId id) {
-            var product = Product.GetById(id);
+            var product = _ProductRepo.Get(id);
             if (product == null)
                 return new EmptyResult();
 
@@ -68,7 +68,7 @@ namespace Queen.Controllers
             chart.Dataset = new[]{
                 new FusionChartsDriver.DataSet {
                     Data = days.Select(d=> {
-                        var price = product.GetPriceInDay(d);
+                        var price = _PriceHistoryRepo.GetPriceInDay(id, d);
                         return new FusionChartsDriver.Data {
                             Value = price,
                             ToolText = string.Format("{0}月{1}日价格 {2:C}", d.Month, d.Day, price)

@@ -15,9 +15,9 @@ namespace Business {
             Collection = DatabaseFactory.CreateMongoDatabase().GetCollection<Category>("categories");
         }
 
-        public IEnumerable<Category> GetAll() {
-            return Collection.FindAll();
-        }
+        //public IEnumerable<Category> GetAll() {
+        //    return Collection.FindAll();
+        //}
 
         //public IEnumerable<Category> GetBySource(string source) {
         //    return Collection.Find(Query<Category>.EQ(c => c.Source, source));
@@ -95,29 +95,29 @@ namespace Business {
             }
         }
 
-        public void Save(Category category) {
-            Collection.Save(category);
-        }
+        //public void Save(Category category) {
+        //    Collection.Save(category);
+        //}
 
         //public void DisableById(string categoryId) {
         //    Collection.Update(Query<Category>.EQ(c => c.Id, categoryId), Update<Category>.Set(c => c.Enable, false));
         //}
 
-        public void UpdateProductsUpdateTime(ObjectId id, DateTime productsUpdateTime) {
-            Collection.Update(Query<Category>.EQ(c => c.Id, id),
-                    Update<Category>.Set(c => c.ProductsUpdateTime, productsUpdateTime));
-        }
+        //public void UpdateProductsUpdateTime(ObjectId id, DateTime productsUpdateTime) {
+        //    Collection.Update(Query<Category>.EQ(c => c.Id, id),
+        //            Update<Category>.Set(c => c.ProductsUpdateTime, productsUpdateTime));
+        //}
 
-        public void ResetStableTimes(ObjectId id) {
-            Collection.Update(Query<Category>.EQ(c => c.Id, id),
-                    Update<Category>.Set(c => c.StableTimes, 0));
-        }
+        //public void ResetStableTimes(ObjectId id) {
+        //    Collection.Update(Query<Category>.EQ(c => c.Id, id),
+        //            Update<Category>.Set(c => c.StableTimes, 0));
+        //}
 
-        public void IncreaseStableTimes(ObjectId id, int maxStableTimes = 24) {
-            Collection.Update(Query.And(
-                    Query<Category>.EQ(c => c.Id, id),
-                    Query<Category>.LT(c => c.StableTimes, maxStableTimes)),
-                    Update<Category>.Inc(c => c.StableTimes, 1));
-        }
+        //public void IncreaseStableTimes(ObjectId id, int maxStableTimes = 24) {
+        //    Collection.Update(Query.And(
+        //            Query<Category>.EQ(c => c.Id, id),
+        //            Query<Category>.LT(c => c.StableTimes, maxStableTimes)),
+        //            Update<Category>.Inc(c => c.StableTimes, 1));
+        //}
     }
 }

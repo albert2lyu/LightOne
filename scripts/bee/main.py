@@ -7,6 +7,7 @@ from datetime import datetime
 import sys
 import json
 import time
+import urllib.request
 
 class YhdIndex:
 	def __init__(self, http, url):
@@ -170,6 +171,7 @@ class ProductRepo:
 		print('.', end = '', flush = True)
 
 	def get_all(self):
+		#return self.collection.find(sort=[('UpdateTime', pymongo.ASCENDING)])
 		return self.collection.find()
 
 class PriceHistoryRepo:
@@ -201,7 +203,7 @@ def extract_price(h, db):
 	products = list()
 	for product in all_products:
 		products.append(product)
-		if len(products) == 5:
+		if len(products) == 20:
 			process_products_price(h, db, products)
 			products.clear()
 
@@ -216,21 +218,27 @@ def extract_price(h, db):
 def process_products_price(http, db, products):
 	price_history_repo = PriceHistoryRepo(db)
 
-	url = 'http://busystock.i.yihaodian.com/busystock/restful/truestock?mcsite=1&provinceId=2&' + '&'.join('productIds=' + p['Number'] for p in products)
-	response, content = http.request(url)
-	for item in json.loads(content.decode("utf-8")):
-		for product in products:
-			if product['Number'] == str(item['productId']):
-				old_price = product.get('Price')
-				new_price = item['productPrice']
-				if (old_price != new_price):
-					product['OldPrice'] = old_price
-					product['Price'] = new_price
-					product['ChangedRatio'] = ProductRepo.cacl_changed_ratio(old_price, new_price)
-					product['UpdateTime'] = datetime.now()
-					db.products.collection.save(product)
-					price_history_repo.save(product['_id'], new_price)
-				break
+	try:
+		url = 'http://busystock.i.yihaodian.com/busystock/restful/truestock?mcsite=1&provinceId=2&' + '&'.join('productIds=' + p['Number'] for p in products)
+		response = urllib.request.urlopen(url)
+		content = response.read()
+		# response, content = http.request(url)
+		for item in json.loads(content.decode("utf-8")):
+			for product in products:
+				if product['Number'] == str(item['productId']):
+					old_price = product.get('Price')
+					new_price = item['productPrice']
+					if (old_price != new_price):
+						product['OldPrice'] = old_price
+						product['Price'] = new_price
+						product['ChangedRatio'] = ProductRepo.cacl_changed_ratio(old_price, new_price)
+						product['UpdateTime'] = datetime.now()
+						db.products.collection.save(product)
+						price_history_repo.save(product['_id'], new_price)
+					break
+	except TimeoutError:
+		time.sleep(60)
+		process_products_price(http, db, products)
 
 if __name__ == '__main__':
 	h = httplib2.Http('.cache')

@@ -17,7 +17,7 @@ namespace Queen.Models
             Product = product;
 
             if (categories != null)
-                Categories = categories.OrderBy(c => c.Level).ToList();
+                Categories = categories.OrderBy(c => c.Sort).ToList();
             else
                 Categories = new Category[0];
         }

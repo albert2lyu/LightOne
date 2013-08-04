@@ -21,8 +21,8 @@ namespace Migration {
             }
             if (args[0] == "fixprice")
                 new FixPrice().Run(double.Parse(args[1]));
-            else if (args[0] == "delcat")
-                new RemoveDisabledCategories().Run();
+            //else if (args[0] == "delcat")
+            //    new RemoveDisabledCategories().Run();
             else if (args[0] == "delp")
                 new DeleteProducts().Run(int.Parse(args[1]));
         }

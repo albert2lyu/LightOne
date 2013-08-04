@@ -18,13 +18,7 @@ namespace Business
 
         public string Name { get; set; }
 
-        public string Url { get; set; }
-
         public string ParentNumber { get; set; }
-
-        public int Level { get; set; }
-
-        public int StableTimes { get; set; }
 
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime CreateTime { get; set; }
@@ -33,15 +27,5 @@ namespace Business
         public DateTime UpdateTime { get; set; }
 
         public int Sort { get; set; }
-
-        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
-        public DateTime ProductsUpdateTime { get; set; }
-
-        public bool Enable { get; set; }
-
-        public Category() {
-            Level = 1;
-            Enable = true;
-        }
     }
 }
