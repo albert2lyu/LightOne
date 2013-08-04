@@ -34,11 +34,14 @@ namespace Business {
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
-        public IEnumerable<Product> GetByPriceReduced(int count, int hoursAgo) {
-            return Collection.Find(
-                    Query.And(
-                        Query<Product>.LT(p => p.ChangedRatio, 0),
-                        Query<Product>.GT(p => p.UpdateTime, DateTime.Now.AddHours(-hoursAgo))))
+        public IEnumerable<Product> GetByPriceReduced(ObjectId categoryId, int count, int hoursAgo) {
+            var conditions = new List<IMongoQuery> {
+                Query<Product>.LT(p => p.ChangedRatio, 0),
+                Query<Product>.GT(p => p.UpdateTime, DateTime.Now.AddHours(-hoursAgo))
+            };
+            if (categoryId != ObjectId.Empty)
+                conditions.Add(Query<Product>.EQ(p => p.CategoryIds, categoryId));
+            return Collection.Find(Query.And(conditions))
                 .SetSortOrder(SortBy<Product>.Ascending(p => p.ChangedRatio))
                 .SetLimit(count);
         }

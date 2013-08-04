@@ -11,18 +11,20 @@ namespace Queen.Controllers
     public class ProductsController : Controller
     {
         private readonly CategoryRepo _CategoryRepo = new CategoryRepo();
+        private readonly ProductRepo _ProductRepo = new ProductRepo();
 
         //[OutputCache(Duration=600)]
         public ActionResult PriceReduced(ObjectId categoryId) {
             var category = _CategoryRepo.Get(categoryId);
 
-            IEnumerable<Product> products = new Product[0];
-            var ratioRankingRepo = new RatioRankingRepo();
-            var ranking = ratioRankingRepo.GetByCategoryId(categoryId);
-            if (ranking != null) {
-                products = ranking.ProductIds.Select(id => Product.GetById(id)).Where(p => p != null);
-            }
+            //IEnumerable<Product> products = new Product[0];
+            //var ratioRankingRepo = new RatioRankingRepo();
+            //var ranking = ratioRankingRepo.GetByCategoryId(categoryId);
+            //if (ranking != null) {
+            //    products = ranking.ProductIds.Select(id => Product.GetById(id)).Where(p => p != null);
+            //}
             //var products = Product.GetByPriceReduced(categoryId, 150, 24);
+            var products = _ProductRepo.GetByPriceReduced(categoryId, 150, 24);
 
             ViewBag.CategoryName = category != null ? category.Name : string.Empty;
             ViewBag.CategoryId = categoryId;

@@ -52,13 +52,18 @@ namespace Business {
             yield return category;
         }
 
-        private IEnumerable<Category> GetByLevel(int level) {
-            return Collection.Find(Query<Category>.EQ(c => c.Level, level))
-                .SetSortOrder(SortBy<Category>.Ascending(c => c.Sort));
-        }
+        //private IEnumerable<Category> GetByLevel(int level) {
+        //    return Collection.Find(Query<Category>.EQ(c => c.Level, level))
+        //        .SetSortOrder(SortBy<Category>.Ascending(c => c.Sort));
+        //}
 
         private IEnumerable<Category> GetBySourceAndParentNumber(string source, string parentNumber) {
             return Collection.Find(Query.And(Query<Category>.EQ(c => c.Source, source), Query<Category>.EQ(c => c.ParentNumber, parentNumber)))
+                    .SetSortOrder(SortBy<Category>.Ascending(c => c.Sort));
+        }
+
+        private IEnumerable<Category> GetByParentNumber(string parentNumber) {
+            return Collection.Find(Query<Category>.EQ(c => c.ParentNumber, parentNumber))
                     .SetSortOrder(SortBy<Category>.Ascending(c => c.Sort));
         }
 
@@ -66,7 +71,7 @@ namespace Business {
             var category = Get(categoryId);
             if (category == null) {
                 // 分类不存在，返回顶级分类
-                return GetByLevel(1).Select(c => new Tuple<Category, IEnumerable<Category>>(c, null));
+                return GetByParentNumber(null).Select(c => new Tuple<Category, IEnumerable<Category>>(c, null));
             }
 
             // 获取下级分类

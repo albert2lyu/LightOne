@@ -40,6 +40,10 @@ namespace Business {
 
         public Signature Signature { get; set; }
 
+        public string SubTitle { get; set; }
+
+        public string Brand { get; set; }
+
 
         private static double CaclChangedRatio(double oldPrice, double newPrice) {
             if (oldPrice == 0)

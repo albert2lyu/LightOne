@@ -5,6 +5,8 @@ import xml.etree.ElementTree as ElementTree
 import pymongo
 from datetime import datetime
 import sys
+import json
+import time
 
 class YhdIndex:
 	def __init__(self, http, url):
@@ -39,8 +41,12 @@ class YhdCategories:
 
 class YhdProducts:
 	def __init__(self, http, url):
-		response, content = http.request(url)
-		self.root = ElementTree.fromstring(content)
+		try:
+			response, content = http.request(url)
+			self.root = ElementTree.fromstring(content)
+		except ConnectionResetError:
+			time.sleep(10)
+			__init__(self, http, url)
 
 	def __iter__(self):
 		self.iter = iter(self.root)
@@ -66,6 +72,8 @@ class YhdProducts:
 			product_url = node.find('product_url').text,
 			prices = self.parse_region_price(node.find('sale_price')),
 			product_url_m = node.find('product_url_m').text)
+
+
 
 class CategoryRepo:
 	def __init__(self, db):
@@ -114,7 +122,8 @@ class ProductRepo:
 			if exist.get(field) != new.get(field):
 				return True
 
-	def cacl_changed_ratio(self, oldPrice, newPrice):
+	@staticmethod
+	def cacl_changed_ratio(oldPrice, newPrice):
 		if oldPrice == None or newPrice == None or oldPrice == 0:
 			return 0
 		return (newPrice - oldPrice) / oldPrice
@@ -148,7 +157,7 @@ class ProductRepo:
 				if old_price != new_price:
 					# 价格发生变化
 					exist_product['OldPrice'] = old_price
-					exist_product['ChangedRatio'] = self.cacl_changed_ratio(old_price, new_price)
+					exist_product['ChangedRatio'] = ProductRepo.cacl_changed_ratio(old_price, new_price)
 
 				exist_product.update(new_product)
 				exist_product['UpdateTime'] = datetime.now()
@@ -160,6 +169,8 @@ class ProductRepo:
 
 		print('.', end = '', flush = True)
 
+	def get_all(self):
+		return self.collection.find()
 
 class PriceHistoryRepo:
 	def __init__(self, db):
@@ -171,10 +182,8 @@ class PriceHistoryRepo:
 			upsert = True)
 
 
-def extract_products(h):
+def extract_products(h, db):
 	index = YhdIndex(h, 'http://union.yihaodian.com/api/productInfo/yihaodian/index.xml')
-
-	db = pymongo.MongoClient().queen_new
 
 	print('处理分类')
 	categories = YhdCategories(h, index.category_path)
@@ -184,17 +193,52 @@ def extract_products(h):
 	for products_url in index.products:
 		products = YhdProducts(h, index.product_path + products_url)
 		ProductRepo(db).save(products)
-		break
 
-def extract_price(h):
-	pass
+def extract_price(h, db):
+	all_products = ProductRepo(db).get_all()
+
+	count = 0
+	products = list()
+	for product in all_products:
+		products.append(product)
+		if len(products) == 5:
+			process_products_price(h, db, products)
+			products.clear()
+
+		count += 1
+		if count % 1000 == 0:
+			print('.', end = '', flush = True)
+
+	# 处理不足一批的products
+	if len(products) > 0:
+		process_products_price(h, db, products)
+
+def process_products_price(http, db, products):
+	price_history_repo = PriceHistoryRepo(db)
+
+	url = 'http://busystock.i.yihaodian.com/busystock/restful/truestock?mcsite=1&provinceId=2&' + '&'.join('productIds=' + p['Number'] for p in products)
+	response, content = http.request(url)
+	for item in json.loads(content.decode("utf-8")):
+		for product in products:
+			if product['Number'] == str(item['productId']):
+				old_price = product.get('Price')
+				new_price = item['productPrice']
+				if (old_price != new_price):
+					product['OldPrice'] = old_price
+					product['Price'] = new_price
+					product['ChangedRatio'] = ProductRepo.cacl_changed_ratio(old_price, new_price)
+					product['UpdateTime'] = datetime.now()
+					db.products.collection.save(product)
+					price_history_repo.save(product['_id'], new_price)
+				break
 
 if __name__ == '__main__':
 	h = httplib2.Http('.cache')
+	db = pymongo.MongoClient().queen_new
 
-	if len(sys.argv) == 1:
-		extract_products(h)
+	if len(sys.argv) == 2:
+		extract_products(h, db)
 	else:
-		extract_price(h)
+		extract_price(h, db)
 
 	print('done')

@@ -18,7 +18,7 @@ namespace Business {
             const int MAX_COUNT = 150;
             const int HOURS_AGO = 10;
             // 计算所有商品的折扣排行
-            var products = _ProductRepo.GetByPriceReduced(MAX_COUNT, HOURS_AGO);
+            var products = _ProductRepo.GetByPriceReduced(ObjectId.Empty, MAX_COUNT, HOURS_AGO);
             _RatioRankingRepo.Upsert(ObjectId.Empty, products.Select(p => p.Id).ToArray());
 
             RankProductCategories(MAX_COUNT, HOURS_AGO);

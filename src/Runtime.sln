@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{7C0AB497-9E3E-4C1A-87F8-35D730B4A26E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bee", "Bee\Bee.csproj", "{DBF00AA0-8678-431D-8C55-540F5D1FC5EF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Queen", "Queen\Queen.csproj", "{B66F09C4-D728-4F32-B6E3-48E3CD3E09CE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{FF0E69FD-046B-4638-836B-483AB07B4AB7}"
@@ -25,10 +23,6 @@ Global
 		{7C0AB497-9E3E-4C1A-87F8-35D730B4A26E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C0AB497-9E3E-4C1A-87F8-35D730B4A26E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C0AB497-9E3E-4C1A-87F8-35D730B4A26E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DBF00AA0-8678-431D-8C55-540F5D1FC5EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DBF00AA0-8678-431D-8C55-540F5D1FC5EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DBF00AA0-8678-431D-8C55-540F5D1FC5EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DBF00AA0-8678-431D-8C55-540F5D1FC5EF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B66F09C4-D728-4F32-B6E3-48E3CD3E09CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B66F09C4-D728-4F32-B6E3-48E3CD3E09CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B66F09C4-D728-4F32-B6E3-48E3CD3E09CE}.Release|Any CPU.ActiveCfg = Release|Any CPU

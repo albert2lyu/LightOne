@@ -15,7 +15,7 @@ namespace Common.Data
             //var connectionString = string.Format("mongodb://{0}/?safe=true", host);
             var connectionString = string.Format("mongodb://{0}/", host);
             var server = MongoServer.Create(connectionString);
-            return server.GetDatabase("queen");
+            return server.GetDatabase("queen_new");
         }
 	}
 }
