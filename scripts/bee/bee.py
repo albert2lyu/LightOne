@@ -45,7 +45,8 @@ class YhdProducts:
 		try:
 			response, content = http.request(url)
 			self.root = ElementTree.fromstring(content)
-		except ConnectionResetError:
+		except:
+			print(sys.exc_info())
 			time.sleep(10)
 			__init__(self, http, url)
 
@@ -79,9 +80,9 @@ class YhdProducts:
 class CategoryRepo:
 	def __init__(self, db):
 		self.collection = db.categories
-		self.collection.ensure_index([('Source', pymongo.ASCENDING), ('Number', pymongo.ASCENDING)])
+		self.collection.ensure_index([('Source', pymongo.ASCENDING), ('Number', pymongo.ASCENDING)], unique = True)
 
-	def save(self, categories):
+	def save_yhd_categories(self, categories):
 		sort = 0
 		for category in categories:
 			number = category['cid']
@@ -116,7 +117,7 @@ class ProductRepo:
 		self.category_repo = CategoryRepo(db)
 		self.price_history_repo = PriceHistoryRepo(db)
 		self.collection = db.products
-		self.collection.ensure_index([('Source', pymongo.ASCENDING), ('Number', pymongo.ASCENDING)])
+		self.collection.ensure_index([('Source', pymongo.ASCENDING), ('Number', pymongo.ASCENDING)], unique = True)
 
 	def has_changed(self, exist, new, fields):
 		for field in fields:
@@ -129,7 +130,7 @@ class ProductRepo:
 			return 0
 		return (newPrice - oldPrice) / oldPrice
 
-	def save(self, products):
+	def save_yhd_products(self, products):
 		for product in products:
 			new_product = dict(
 				Number = product['product_id'],
@@ -162,13 +163,16 @@ class ProductRepo:
 
 				exist_product.update(new_product)
 				exist_product['UpdateTime'] = datetime.now()
-				self.collection.save(exist_product)
+				self.save(exist_product)
 
 				# 记录历史价格
 				if old_price != new_price:
 					self.price_history_repo.save(exist_product['_id'], new_price)
 
 		print('.', end = '', flush = True)
+
+	def save(self, product):
+		self.collection.save(product)
 
 	def get_all(self):
 		#return self.collection.find(sort=[('UpdateTime', pymongo.ASCENDING)])
@@ -189,12 +193,12 @@ def extract_products(h, db):
 
 	print('处理分类')
 	categories = YhdCategories(h, index.category_path)
-	CategoryRepo(db).save(categories)
+	CategoryRepo(db).save_yhd_categories(categories)
 
 	print('处理产品')
 	for products_url in index.products:
 		products = YhdProducts(h, index.product_path + products_url)
-		ProductRepo(db).save(products)
+		ProductRepo(db).save_yhd_products(products)
 
 def extract_price(h, db):
 	all_products = ProductRepo(db).get_all()
@@ -217,6 +221,7 @@ def extract_price(h, db):
 
 def process_products_price(http, db, products):
 	price_history_repo = PriceHistoryRepo(db)
+	product_repo = ProductRepo(db)
 
 	try:
 		url = 'http://busystock.i.yihaodian.com/busystock/restful/truestock?mcsite=1&provinceId=2&' + '&'.join('productIds=' + p['Number'] for p in products)
@@ -228,16 +233,17 @@ def process_products_price(http, db, products):
 				if product['Number'] == str(item['productId']):
 					old_price = product.get('Price')
 					new_price = item['productPrice']
-					if (old_price != new_price):
+					if old_price != new_price:
+						# print(product['Number'], old_price, new_price)
 						product['OldPrice'] = old_price
 						product['Price'] = new_price
 						product['ChangedRatio'] = ProductRepo.cacl_changed_ratio(old_price, new_price)
 						product['UpdateTime'] = datetime.now()
-						db.products.collection.save(product)
+						product_repo.save(product)
 						price_history_repo.save(product['_id'], new_price)
 					break
 	except:
-		print("Unexpected error:", sys.exc_info()[0])
+		print(sys.exc_info())
 		time.sleep(60)
 		process_products_price(http, db, products)
 
@@ -248,6 +254,9 @@ if __name__ == '__main__':
 	if len(sys.argv) == 2:
 		extract_products(h, db)
 	else:
-		extract_price(h, db)
+		while True:
+			t = time.time()
+			extract_price(h, db)
+			print('抓取价格完毕{0}s'.format(time.time() - t))
 
 	print('done')

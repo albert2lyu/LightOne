@@ -24,13 +24,13 @@ namespace Daemon.DataUploading {
         }
 
         private IEnumerable<Tuple<string, string>> BuildMongodumpArguments(TimeSpan timeAgo) {
-            var epoch = new DateTime(1970, 1, 1).ToLocalTime();
-            var startTime = (long)DateTime.Now.Add(timeAgo.Negate()).Subtract(epoch).TotalMilliseconds;
+            var epoch = new DateTime(1970, 1, 1).ToUniversalTime();
+            var startTime = (long)DateTime.UtcNow.Add(timeAgo.Negate()).Subtract(epoch).TotalMilliseconds;
             yield return new Tuple<string, string>("products", string.Format("\"{{UpdateTime: {{$gt: new Date({0})}}}}\"", startTime));
 
             yield return new Tuple<string, string>("categories", null);
 
-            yield return new Tuple<string, string>("ratio_rankings", null);
+            //yield return new Tuple<string, string>("ratio_rankings", null);
         }
     }
 }
